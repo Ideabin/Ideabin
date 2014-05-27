@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diagram xmlns="http://oxygene.sk/ns/diagram/1/" >
+  <notation>Relational</notation>
+  <item-list>
+    <item type="database-table" id="{1852433b-c27d-417b-bda3-8e55f40e4153}" >
+      <position>
+        <x>290</x>
+        <y>8</y>
+      </position>
+      <table>
+        <name>users</name>
+        <color>#ccffcc</color>
+        <column-list>
+          <column>
+            <name>user_id</name>
+            <data-type>UUID</data-type>
+            <required>True</required>
+            <primary-key>True</primary-key>
+            <notes>User's Unique ID</notes>
+          </column>
+          <column>
+            <name>username</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>A unique handle/nick/name.</notes>
+          </column>
+          <column>
+            <name>password</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>The password used to authenticate the user.</notes>
+          </column>
+          <column>
+            <name>first_name</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>First name</notes>
+          </column>
+          <column>
+            <name>last_name</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>Last name</notes>
+          </column>
+          <column>
+            <name>email</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>Email ID</notes>
+          </column>
+          <column>
+            <name>blog_url</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>Website or blog url of the user.</notes>
+          </column>
+          <column>
+            <name>profile_fb</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>Link to FB profile.</notes>
+          </column>
+          <column>
+            <name>profile_twitter</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>Link to Twitter profile.</notes>
+          </column>
+          <column>
+            <name>created_on</name>
+            <data-type>TIMESTAMP</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>When did the user register on the site.</notes>
+          </column>
+          <column>
+            <name>last_login_on</name>
+            <data-type>TIMESTAMP</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>When did the user last login to the site.</notes>
+          </column>
+        </column-list>
+      </table>
+    </item>
+    <item type="database-table" id="{3a9231cd-2b96-4e2b-adb5-b9a3f7102728}" >
+      <position>
+        <x>538</x>
+        <y>90</y>
+      </position>
+      <table>
+        <name>ideas</name>
+        <color>#aaffff</color>
+        <column-list>
+          <column>
+            <name>user_id</name>
+            <data-type>UUID</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>User's Unique ID</notes>
+          </column>
+          <column>
+            <name>idea_id</name>
+            <data-type>UUID</data-type>
+            <required>True</required>
+            <primary-key>True</primary-key>
+            <notes>Idea's Unique ID</notes>
+          </column>
+          <column>
+            <name>title</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>A short title of the idea</notes>
+          </column>
+          <column>
+            <name>desc</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>A full description of the idea in Markdown.</notes>
+          </column>
+          <column>
+            <name>status</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>The status of the idea: Working, Free, Planned etc.</notes>
+          </column>
+          <column>
+            <name>story</name>
+            <data-type>TEXT</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>How did you come upon the idea? Add Sources and Inspiration.</notes>
+          </column>
+          <column>
+            <name>related</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>Stuff that might be related to the Idea.</notes>
+          </column>
+          <column>
+            <name>langs</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>Languages you think the Idea could be implemented.</notes>
+          </column>
+          <column>
+            <name>tags</name>
+            <data-type>VARCHAR(n)</data-type>
+            <required>False</required>
+            <primary-key>False</primary-key>
+            <notes>A comma separated list of tags.</notes>
+          </column>
+          <column>
+            <name>vote_count</name>
+            <data-type>INTEGER</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>Number of upvotes the idea has.</notes>
+          </column>
+          <column>
+            <name>created_on</name>
+            <data-type>TIMESTAMP</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>A timestamp of when the idea was created.</notes>
+          </column>
+          <column>
+            <name>deleted</name>
+            <data-type>BOOLEAN</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>Never delete the idea, just set the flag here and forget.</notes>
+          </column>
+        </column-list>
+      </table>
+    </item>
+    <item type="database-table" id="{39d7aced-03d0-4ab1-bc7b-d1419aa8c562}" >
+      <position>
+        <x>679</x>
+        <y>-55</y>
+      </position>
+      <table>
+        <name>comments</name>
+        <color>#ffff7f</color>
+        <column-list>
+          <column>
+            <name>user_id</name>
+            <data-type>UUID</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>User's Unique ID</notes>
+          </column>
+          <column>
+            <name>idea_id</name>
+            <data-type>UUID</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>Idea's Unique ID</notes>
+          </column>
+          <column>
+            <name>comment_id</name>
+            <data-type>UUID</data-type>
+            <required>True</required>
+            <primary-key>True</primary-key>
+            <notes>Comment's Unique ID</notes>
+          </column>
+          <column>
+            <name>created_on</name>
+            <data-type>TIMESTAMP</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>A timestamp of when the comment was written.</notes>
+          </column>
+          <column>
+            <name>content</name>
+            <data-type>TEXT</data-type>
+            <required>True</required>
+            <primary-key>False</primary-key>
+            <notes>The actual comment data in Markdown.</notes>
+          </column>
+        </column-list>
+      </table>
+    </item>
+    <item type="database-relationship" id="{4216494d-345d-4491-af13-4589b6bd2406}" >
+      <line>
+        <connector-list>
+          <connector>
+            <position>
+              <x>392</x>
+              <y>123.333</y>
+            </position>
+            <angle>0</angle>
+            <hub owner="{1852433b-c27d-417b-bda3-8e55f40e4153}" />
+          </connector>
+          <connector>
+            <position>
+              <x>538</x>
+              <y>183.5</y>
+            </position>
+            <angle>180</angle>
+            <hub owner="{3a9231cd-2b96-4e2b-adb5-b9a3f7102728}" />
+          </connector>
+        </connector-list>
+      </line>
+      <relationship>
+        <cardinality>OneToMany</cardinality>
+        <modality>
+          <child>Optional</child>
+          <parent>Optional</parent>
+        </modality>
+      </relationship>
+    </item>
+    <item type="database-relationship" id="{36de6373-cb1e-4c9b-bcab-70a35e4d84c7}" >
+      <line>
+        <connector-list>
+          <connector>
+            <position>
+              <x>629</x>
+              <y>183.5</y>
+            </position>
+            <angle>0</angle>
+            <hub owner="{3a9231cd-2b96-4e2b-adb5-b9a3f7102728}" />
+          </connector>
+          <connector>
+            <position>
+              <x>727.5</x>
+              <y>34</y>
+            </position>
+            <angle>270</angle>
+            <hub owner="{39d7aced-03d0-4ab1-bc7b-d1419aa8c562}" />
+          </connector>
+        </connector-list>
+      </line>
+      <relationship>
+        <cardinality>OneToMany</cardinality>
+        <modality>
+          <child>Optional</child>
+          <parent>Optional</parent>
+        </modality>
+      </relationship>
+    </item>
+    <item type="database-relationship" id="{fad59d75-991e-4b84-aa24-39f6560bd04a}" >
+      <line>
+        <connector-list>
+          <connector>
+            <position>
+              <x>392</x>
+              <y>65.6667</y>
+            </position>
+            <angle>0</angle>
+            <hub owner="{1852433b-c27d-417b-bda3-8e55f40e4153}" />
+          </connector>
+          <connector>
+            <position>
+              <x>679</x>
+              <y>-10.5</y>
+            </position>
+            <angle>180</angle>
+            <hub owner="{39d7aced-03d0-4ab1-bc7b-d1419aa8c562}" />
+          </connector>
+        </connector-list>
+      </line>
+      <relationship>
+        <cardinality>OneToMany</cardinality>
+        <modality>
+          <child>Optional</child>
+          <parent>Optional</parent>
+        </modality>
+      </relationship>
+    </item>
+  </item-list>
+</diagram>
