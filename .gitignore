@@ -2,9 +2,9 @@
 Ideabin.db
 
 # Virtualenv
-Scripts/
-Lib/
-Include/
+# For details on how to setup IdeaBin, read the wiki:
+# https://github.com/jdevlabs/Ideabin/wiki/Setup
+env/
 
 ##################################################
 ###########   Standard Python Ignores   ##########

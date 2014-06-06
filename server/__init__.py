@@ -1,7 +1,7 @@
 # Flask and associates
 from flask import Flask
 
-# SQLAlchemy and its exceptions class
+# SQLAlchemy
 from flask.ext.sqlalchemy import SQLAlchemy
 
 # Define the WSGI application object
