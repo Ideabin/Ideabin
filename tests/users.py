@@ -2,6 +2,7 @@ import unittest
 
 from server.users.models import User
 
+
 class UsersTestCase(unittest.TestCase):
     """Run tests on our 'Users' model"""
 
@@ -13,19 +14,12 @@ class UsersTestCase(unittest.TestCase):
         User.new('guest', 'guest@gmail.com')
 
         users = User.query.all()
-        self.assertEqual(users[0].email, "admin@gmail.com")
+        self.assertEqual(users[1].email, "guest@gmail.com")
+
+    def test_update_user(self):
+        """
+        Try updating the details of a user
+        """
 
         admin = User.query.filter_by(username='admin').first()
-        self.assertEqual(admin.username, "admin")
-
-    def test_query_users(self):
-        """
-        Print all user ids present in the db
-
-        Not a test, but is just used while development
-        Will probably be removed in later commits
-        """
-
-        users = User.query.all()
-        for user in users:
-            print(user.username, user.id)
+        admin.update(email="admin@gmail.com")

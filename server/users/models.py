@@ -8,25 +8,69 @@ from sqlalchemy import exc as SQLexc
 from misc.uuid import UUID
 import uuid
 
+# Required for timestamps
+import datetime as dt
+
+
 class User(db.Model):
-    id = db.Column(UUID(), primary_key=True)
+    id = db.Column(UUID(), primary_key=True, default=uuid.uuid4())
+
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
 
+    # password = db.Column(db.String(180))
+
+    first_name = db.Column(db.String(120), default='')
+    last_name = db.Column(db.String(120), default='')
+
+    # Note: This data is entirely optional
+    blog_url = db.Column(db.String(120), default='')
+    profile_fb = db.Column(db.String(120), default='')
+    profile_twitter = db.Column(db.String(120), default='')
+
+    # Note: The UTC timestamps will be converted to correct timezones
+    # by the client
+    created_on = db.Column(db.DateTime, default=dt.datetime.utcnow())
+    last_login_on = db.Column(db.DateTime, default=dt.datetime.utcnow())
+
     def __init__(self, username, email):
-        self.id = uuid.uuid4()
         self.username = username
         self.email = email
+        # self.password = password
 
     def __repr__(self):
         return '<User %r>' % self.username
 
     def new(username, email):
+        """
+        Add a new user to the database
+        """
         new_user = User(username, email)
         try:
             db.session.add(new_user)
             db.session.commit()
         except SQLexc.IntegrityError as e:
-            if str(e).index('is not unique'):
-                db.session.rollback()
-                print ("Not adding '%s' as it already exists." % e.params[1])
+            # Todo: Raise a proper exception
+            # that the view will catch
+            db.session.rollback()
+            # if str(e).index('is not unique'):
+                # print("Not adding '%s' as it already exists." % e.params[1])
+
+    # Todo: The function should probably have variable arguments
+    # and only the args supplied should be updated.
+    def update(self, email):
+        """
+        Update a user's data to new values
+        """
+        self.email = email
+        db.session.commit()
+
+    def json(self):
+        """
+        Return the user's data in json form
+        """
+        json = {}
+        for prop, val in vars(self).items():
+            if not prop.startswith('_'):
+                json.update({prop: str(val)})
+        return json
