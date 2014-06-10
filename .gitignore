@@ -6,6 +6,10 @@ Ideabin.db
 # https://github.com/jdevlabs/Ideabin/wiki/Setup
 env/
 
+# JSON files are used during testing
+# and contain random outputs
+*.json
+
 ##################################################
 ###########   Standard Python Ignores   ##########
 ##################################################

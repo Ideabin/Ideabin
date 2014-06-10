@@ -13,7 +13,7 @@ import datetime as dt
 
 
 class User(db.Model):
-    id = db.Column(UUID(), primary_key=True, default=uuid.uuid4())
+    user_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
 
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
@@ -52,19 +52,18 @@ class User(db.Model):
         except SQLexc.IntegrityError as e:
             # Todo: Raise a proper exception
             # that the view will catch
+            # raise(e)
             db.session.rollback()
-            # if str(e).index('is not unique'):
-                # print("Not adding '%s' as it already exists." % e.params[1])
 
-    # Todo: The function should probably have variable arguments
-    # and only the args supplied should be updated.
-    def update(self, email):
+    def update(self, **kwargs):
         """
         Update a user's data to new values
         """
-        self.email = email
+        for key, value in kwargs.items():
+          setattr(self, key, value)
         db.session.commit()
 
+    @property
     def json(self):
         """
         Return the user's data in json form

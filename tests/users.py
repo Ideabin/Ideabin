@@ -10,6 +10,7 @@ class UsersTestCase(unittest.TestCase):
         """
         Add some users to the db and confirm that they have been added
         """
+
         User.new('admin', 'admin@gmail.com')
         User.new('guest', 'guest@gmail.com')
 
@@ -22,4 +23,9 @@ class UsersTestCase(unittest.TestCase):
         """
 
         admin = User.query.filter_by(username='admin').first()
-        admin.update(email="admin@gmail.com")
+        admin.update(username="root", email="admin@outlook.com")
+
+        self.assertEqual(admin.username, "root")
+        self.assertEqual(admin.email, "admin@outlook.com")
+
+        admin.update(username="admin", email="admin@gmail.com")

@@ -1,15 +1,19 @@
-# Our application
-from server import app
+# Our application and database
+from server import app, db
 
 # Some flask goodies
-from flask import make_response, jsonify
+from flask import make_response, jsonify, request
 
 # The model
-from server.users.models import User
+from .models import User
 
 # A uuid url converter for flask
 from misc.flask_uuid import FlaskUUID
 FlaskUUID(app)
+
+# Create all tables
+db.create_all()
+
 
 # Note: This route will probably be taken over by
 # our client - the ideabin website.
@@ -20,37 +24,55 @@ def index():
         }), 200)
 
 
-@app.route('/api')
+@app.route('/api/')
 def api_begins():
     return make_response(jsonify({
             "message": "The api is currently being worked on.",
             "methods":
             {
-                "GET": "/api/users",
-                "GET": "/api/user/{uuid: user_id}"
+                "GET":
+                [
+                    "/api/users/",
+                    "/api/users/{user_id}"
+                ]
             }
         }), 200)
 
 
-@app.route('/api/users', methods = ['GET'])
-def get_users():
-        users = []
-        for u in User.query.all():
-            users.append(u.json())
+@app.route('/api/users/', methods = ['GET', 'POST'])
+@app.route('/api/users/<uuid:uid>', methods = ['GET'])
+def get_users(uid=None):
+        """
+        Sends a list of users present in the database
+        """
+        if request.method == 'GET':
+            retData = {"error": "An error occurred while processing the request."}
+            retStatus = 404
+            if uid:
+                u = User.query.filter_by(user_id=uid).first()
+                if u:
+                    retData = {"user": u.json}
+                    retStatus = 200
+                else:
+                    retData = {"error": "The specified user does not exist."}
+            else:
+                all_users = User.query.all()
+                if all_users:
+                    users = []
+                    # Todo: Add paging to retrieve next 50 users and so on
+                    for u in all_users[0:50]:
+                        users.append(u.json)
 
-        return make_response(jsonify({
-            "users": users
-            }), 200)
+                    retData = {"users": users}
+                    retStatus = 200
+                else:
+                    retData = {"error": "There are no users in the database."}
 
-
-@app.route('/api/user/<uuid:uid>', methods = ['GET'])
-def get_user(uid):
-        u = User.query.filter_by(id=uid).first()
-
-        return make_response(jsonify({
-            "user": u.json()
-            }), 200)
-
+            return make_response(jsonify(retData), retStatus)
+        else:
+            return make_response(jsonify({
+                    "error": "The post request has not yet been created.",
+                    }), 404)
 
 
 @app.errorhandler(404)
