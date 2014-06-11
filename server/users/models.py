@@ -60,7 +60,7 @@ class User(db.Model):
         Update a user's data to new values
         """
         for key, value in kwargs.items():
-          setattr(self, key, value)
+            setattr(self, key, value)
         db.session.commit()
 
     @property
