@@ -59,7 +59,7 @@ def get_users():
     return make_response(jsonify(retData), retStatus)
 
 
-@app.route('/api/users/<uuid:uid>', enpoint='list', methods=['GET'])
+@app.route('/api/users/<uuid:uid>', endpoint='list_id', methods=['GET'])
 def get_user(uid):
     """
     Get a specific user with the matching user_id
