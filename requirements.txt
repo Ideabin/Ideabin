@@ -5,3 +5,5 @@ MarkupSafe==0.23
 SQLAlchemy==0.9.4
 Werkzeug==0.9.4
 itsdangerous==0.24
+cython==0.20.2
+oursql==0.9.3.1
