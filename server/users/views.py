@@ -11,9 +11,6 @@ from .models import User
 from misc.flask_uuid import FlaskUUID
 FlaskUUID(app)
 
-# Create all tables
-db.create_all()
-
 
 # Note: This route will probably be taken over by
 # our client - the ideabin website.
