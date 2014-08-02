@@ -8,4 +8,6 @@ Werkzeug==0.9.4
 itsdangerous==0.24
 --allow-external mysql-connector-python
 mysql-connector-python==1.2.2
+alembic==0.6.5
 pep8==1.5.7
+
