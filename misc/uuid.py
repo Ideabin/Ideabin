@@ -5,6 +5,7 @@ from sqlalchemy.types import TypeDecorator, CHAR
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
 
+
 class UUID(TypeDecorator):
     """
     Platform-independent UUID type.
