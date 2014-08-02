@@ -15,7 +15,7 @@ class UsersTestCase(unittest.TestCase):
         User.new('guest', 'guest@gmail.com')
 
         users = User.query.all()
-        self.assertEqual(users[1].email, "guest@gmail.com")
+        self.assertEqual(len(users), 2)
 
     def test_update_user(self):
         """
