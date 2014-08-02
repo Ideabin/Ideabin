@@ -16,7 +16,7 @@ import unittest
 import pep8
 
 # ignore stuff in virtualenvs or version control directories
-ignore_patterns = ('.git', 'env', '__pycache__', '_Help')
+ignore_patterns = ('.git', 'env', '__pycache__', '_Help', 'alembic')
 
 
 def ignore(dir):
