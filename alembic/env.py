@@ -11,16 +11,20 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
+# Find the server module
+import sys, os
+sys.path.append(os.getcwd())
+from server import app, db
 
-# I don't know what needs to be done here in the followong 2 lines to
-# autogenerate the migration scripts. Will look at them later. At present
-# we have to make manual changes in the migration scripts as in wiki or README.
+# All our custom Jazz
+from misc.uuid import UUID
+import sqlalchemy as sa
+sa.UUID = UUID
 
-# from server import app, db
-# target_metadata = db
-target_metadata = None
+# Autogenerate changes based on these models
+from server.users.models import User
+
+target_metadata = db.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
