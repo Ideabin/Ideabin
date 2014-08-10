@@ -13,13 +13,12 @@ import datetime as dt
 
 
 class User(db.Model):
-    user_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
+    __tablename__ = 'user'
 
+    user_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
-
     # password = db.Column(db.String(180))
-
     first_name = db.Column(db.String(120), default='')
     last_name = db.Column(db.String(120), default='')
 
@@ -54,6 +53,14 @@ class User(db.Model):
             # that the view will catch
             # raise(e)
             db.session.rollback()
+
+    def delete(self):
+        """
+        Remove a user from the database
+        """
+        db.session.delete(self)
+        db.session.commit()
+        # return self
 
     def update(self, **kwargs):
         """

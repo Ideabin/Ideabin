@@ -56,7 +56,7 @@ def get_users():
     return make_response(jsonify(retData), retStatus)
 
 
-@app.route('/api/users/<uuid:uid>', endpoint='list_id', methods=['GET'])
+@app.route('/api/users/<uuid:uid>', endpoint='list_user', methods=['GET'])
 def get_user(uid):
     """
     Get a specific user with the matching user_id
@@ -71,7 +71,7 @@ def get_user(uid):
     return make_response(jsonify(retData), retStatus)
 
 
-@app.route('/api/users/', endpoint='create', methods=['POST'])
+@app.route('/api/users/', endpoint='create_user', methods=['POST'])
 def create_user():
     """
     Creates a new user with the json data sent
@@ -82,6 +82,25 @@ def create_user():
     else:
         retData, retStatus = {
             "error": "The input data sent should be json."}, 400
+
+    User.new(retData['username'], retData['email'])
+
+    return make_response(jsonify(retData), retStatus)
+
+
+@app.route('/api/users/<uuid:uid>', endpoint='delete_user', methods=['DELETE'])
+def delete_user(uid):
+    """
+    Delete the user with matching user_id
+    """
+
+    u = User.query.filter_by(user_id=uid).first()
+    if u:
+        retData, retStatus = {"user": u.json}, 200
+    else:
+        retData = {"error": "The specified user does not exist."}
+
+    User.delete(u)
 
     return make_response(jsonify(retData), retStatus)
 
