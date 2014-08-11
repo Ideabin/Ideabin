@@ -4,6 +4,7 @@ from server.users.models import User
 
 
 class UsersTestCase(unittest.TestCase):
+
     """Run tests on our 'Users' model"""
 
     def test_add_some_users(self):
