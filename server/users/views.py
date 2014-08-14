@@ -31,13 +31,25 @@ def api_begins():
             "GET":
             [
                 "/api/users/",
-                "/api/users/{user_id}"
+                "/api/users/{user_id}",
+                "/api/ideas/",
+                "/api/ideas/{idea_id}"
+            ],
+            "POST":
+            [
+                "/api/users/",
+                "/api/ideas/"
+            ],
+            "DELETE":
+            [
+                "/api/users/{user_id}",
+                "/api/ideas/{idea_id}"
             ]
         }
     }), 200)
 
 
-@app.route('/api/users/', endpoint='list', methods=['GET'])
+@app.route('/api/users/', endpoint='list_users', methods=['GET'])
 def get_users():
     """
     Sends a list of users present in the database
@@ -83,6 +95,9 @@ def create_user():
         retData, retStatus = {
             "error": "The input data sent should be json."}, 400
 
+    # TODO: Check for the validity of the input (username, email, existence of
+    # user, etc)
+
     User.new(retData['username'], retData['email'])
 
     return make_response(jsonify(retData), retStatus)
@@ -98,11 +113,14 @@ def delete_user(uid):
     if u:
         retData, retStatus = {"user": u.json}, 200
     else:
-        retData = {"error": "The specified user does not exist."}
+        retData, retStatus = {
+            "error": "The specified user does not exist."}, 404
 
     User.delete(u)
 
     return make_response(jsonify(retData), retStatus)
+
+# TODO: Update user data
 
 
 @app.errorhandler(404)

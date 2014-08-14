@@ -12,7 +12,8 @@ config = context.config
 fileConfig(config.config_file_name)
 
 # Find the server module
-import sys, os
+import sys
+import os
 sys.path.append(os.getcwd())
 from server import app, db
 
@@ -23,6 +24,7 @@ sa.UUID = UUID
 
 # Autogenerate changes based on these models
 from server.users.models import User
+from server.ideas.models import Idea
 
 target_metadata = db.metadata
 
