@@ -30,3 +30,17 @@ class UsersTestCase(unittest.TestCase):
         self.assertEqual(admin.email, "admin@outlook.com")
 
         admin.update(username="admin", email="admin@gmail.com")
+
+    def test_delete_user(self):
+        """
+        Add a dummy user in the db, delete it and then cofirm the deletion.
+        """
+
+        User.new('dummy', 'dummy@gmail.com')
+        users = User.query.all()
+        self.assertEqual(len(users), 3)
+
+        dummy = User.query.filter_by(username='dummy').first()
+        dummy.delete()
+        users = User.query.all()
+        self.assertEqual(len(users), 2)
