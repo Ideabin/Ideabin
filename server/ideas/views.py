@@ -1,5 +1,6 @@
 # Our application and database
 from server import app, db
+from server.users.models import User
 
 # Some flask goodies
 from flask import make_response, jsonify, request
@@ -20,13 +21,14 @@ def get_ideas():
     all_ideas = Idea.query.all()
     if all_ideas:
         ideas = []
-        # Todo: Add paging to retrieve next 50 users and so on
+        # Todo: (i)Add paging to retrieve next 50 ideas and so on
         for spark in all_ideas[0:50]:
             ideas.append(spark.json)
 
         retData, retStatus = {"ideas": ideas}, 200
     else:
-        retData = {"error": "There are no ideas in the database."}
+        retData, retStatus = {
+            "error": "There are no ideas in the database."}, 400
 
     return make_response(jsonify(retData), retStatus)
 
@@ -41,7 +43,8 @@ def get_idea(uid):
     if spark:
         retData, retStatus = {"idea": spark.json}, 200
     else:
-        retData = {"error": "The specified user does not exist."}
+        retData, retStatus = {
+            "error": "The specified idea does not exist."}, 400
 
     return make_response(jsonify(retData), retStatus)
 
@@ -51,14 +54,19 @@ def create_idea():
     """
     Creates a new idea with the json data sent
     """
-
     if request.json:
         retData, retStatus = request.json, 201
+
+        u = User.query.filter_by(user_id=retData['user_id']).first()
+        if not u:
+            retData, retStatus = {
+                "error": "The specified user does not exist."}, 400
+            return make_response(jsonify(retData), retStatus)
+
+        Idea.new(retData['title'], retData['desc'], retData['user_id'])
     else:
         retData, retStatus = {
             "error": "The input data sent should be json."}, 400
-
-    Idea.new(retData['title'], retData['user_id'])
 
     return make_response(jsonify(retData), retStatus)
 
@@ -66,23 +74,66 @@ def create_idea():
 @app.route('/api/ideas/<uuid:uid>', endpoint='delete_idea', methods=['DELETE'])
 def delete_idea(uid):
     """
-    Delete the idea with matching idea_id
+    Delete the idea with matching idea_id.
     """
+    if request.json:
+        retData, retStatus = request.json, 201
 
-    spark = Idea.query.filter_by(idea_id=uid).first()
-    if spark:
-        retData, retStatus = {"idea": spark.json}, 200
+        # Checks for the user.
+        u = User.query.filter_by(user_id=retData['user_id']).first()
+        if not u:
+            retData, retStatus = {
+                "error": "The specified user does not exist."}, 400
+            return make_response(jsonify(retData), retStatus)
+
+        # gets the idea and deletes it.
+        spark = Idea.query.filter_by(idea_id=uid).first()
+        if spark:
+            retData, retStatus = {"idea": spark.json}, 200
+            Idea.delete(spark)
+        else:
+            retData, retStatus = {
+                "error": "The specified idea does not exist."}, 400
     else:
         retData, retStatus = {
-            "error": "The specified user does not exist."}, 400
-
-    Idea.delete(spark)
+            "error": "The input data sent should be json."}, 400
 
     return make_response(jsonify(retData), retStatus)
 
-# TODO: Voting endpoint
-# TODO: Update idea
-# TODO: Comment on idea
+
+@app.route('/api/ideas/<uuid:uid>', endpoint='upvote', methods=['POST'])
+def vote_idea(uid):
+    """
+    Increase the vote count of the idea with matching idea_id.
+    """
+    if request.json:
+        retData, retStatus = request.json, 201
+
+        # Checks for the user.
+        u = User.query.filter_by(user_id=retData['user_id']).first()
+        if not u:
+            retData, retStatus = {
+                "error": "The specified user does not exist."}, 400
+            return make_response(jsonify(retData), retStatus)
+
+        # Todo: check if the user has already voted. If yes then call "voting"
+        # else "unvoting".
+        spark = Idea.query.filter_by(idea_id=uid).first()
+        if spark:
+            Idea.voting(spark)
+            spark = Idea.query.filter_by(idea_id=uid).first()
+            retData, retStatus = {"idea": spark.json}, 200
+        else:
+            retData, retStatus = {
+                "error": "The specified idea does not exist."}, 400
+    else:
+        retData, retStatus = {
+            "error": "The input data sent should be json."}, 400
+
+    return make_response(jsonify(retData), retStatus)
+
+# TODO: (i)Update idea
+# TODO: (i)Comment on idea
 
 
 @app.errorhandler(404)

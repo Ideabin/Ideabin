@@ -16,9 +16,10 @@ class Idea(db.Model):
     __tablename__ = 'idea'
 
     idea_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
-    user_id = db.Column(UUID())
-    title = db.Column(db.String(120))
-    desc = db.Column(db.String(300), default='')
+    user_id = db.Column(
+        UUID(), db.ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
+    title = db.Column(db.String(500), nullable=False)
+    desc = db.Column(db.String(1000), nullable=False)
     # status = db.Column(db.String(20), default='')
 
     # story = db.Column(db.String(120), default='')
@@ -27,27 +28,29 @@ class Idea(db.Model):
 
     # Note: The UTC timestamps will be converted to correct timezones
     # by the client
-    created_on = db.Column(db.DateTime, default=dt.datetime.utcnow())
+    created_on = db.Column(
+        db.DateTime, default=dt.datetime.utcnow(), nullable=False)
 
-    # TODO: Tags
+    # TODO: (i)Tags
 
-    def __init__(self, title, user_id):
+    def __init__(self, title, desc, user_id):
         self.title = title
+        self.desc = desc
         self.user_id = user_id
 
     def __repr__(self):
         return '<Idea %r>' % self.title
 
-    def new(title, user_id):
+    def new(title, desc, user_id):
         """
         Add a new idea to the database
         """
-        new_idea = Idea(title, user_id)
+        new_idea = Idea(title, desc, user_id)
         try:
             db.session.add(new_idea)
             db.session.commit()
         except SQLexc.IntegrityError as e:
-            # Todo: Raise a proper exception
+            # Todo: (i)Raise a proper exception
             # that the view will catch
             # raise(e)
             db.session.rollback()
@@ -62,11 +65,29 @@ class Idea(db.Model):
 
     def update(self, **kwargs):
         """
-        Update an idea's data to new values
+        Update an idea's data to new values.
         """
         for key, value in kwargs.items():
             setattr(self, key, value)
         db.session.commit()
+
+    def voting(self):
+        """
+        Increases the vote count.
+        """
+        self.vote_count += 1
+        db.session.commit()
+
+        return self
+
+    def unvoting(self):
+        """
+        Decreases the vote count.
+        """
+        self.vote_count -= 1
+        db.session.commit()
+
+        return self
 
     @property
     def json(self):
