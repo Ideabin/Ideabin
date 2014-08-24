@@ -17,7 +17,8 @@ class Idea(db.Model):
 
     idea_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(
-        UUID(), db.ForeignKey('user.user_id', ondelete='CASCADE'), nullable=False)
+        UUID(), db.ForeignKey('user.user_id', ondelete='CASCADE'),
+        nullable=False)
     title = db.Column(db.String(500), nullable=False)
     desc = db.Column(db.String(1000), nullable=False)
     # status = db.Column(db.String(20), default='')

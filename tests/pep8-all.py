@@ -28,6 +28,7 @@ def ignore(dir):
 
 
 class TestPep8(unittest.TestCase):
+
     """Run PEP8 on all files in this directory and subdirectories."""
 
     def test_pep8(self):
@@ -43,4 +44,4 @@ class TestPep8(unittest.TestCase):
             ]
             errors += style.check_files(python_files).total_errors
 
-        self.assertEqual(errors, 0, 'PEP8 style errors: %d' % errors)
+        self.assertEqual(errors, 0, "PEP8 style errors: %d" % errors)
