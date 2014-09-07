@@ -9,18 +9,16 @@ from server.exceptions import (
 import json
 
 # Some flask goodies
-from flask import make_response, jsonify, request
+from flask import make_response, jsonify, request, Blueprint
 
 # The models
 from .models import Idea
 from server.users.models import User
 
-# A uuid url converter for flask
-from misc.flask_uuid import FlaskUUID
-FlaskUUID(app)
+ideas_bp = Blueprint('ws_ideas', __name__)
 
 
-@app.route('/api/ideas/', endpoint='list_ideas', methods=['GET'])
+@ideas_bp.route('/', endpoint='list_ideas', methods=['GET'])
 def get_ideas():
     """
     Sends a list of ideas present in the database
@@ -39,7 +37,7 @@ def get_ideas():
     return resp
 
 
-@app.route('/api/ideas/<uuid:uid>', endpoint='list_idea', methods=['GET'])
+@ideas_bp.route('/<uuid:uid>', endpoint='list_idea', methods=['GET'])
 def get_idea(uid):
     """
     Get a specific idea with the matching idea_id
@@ -52,7 +50,7 @@ def get_idea(uid):
     return make_response(jsonify(spark.json), 200)
 
 
-@app.route('/api/ideas/', endpoint='create_idea', methods=['POST'])
+@ideas_bp.route('/', endpoint='create_idea', methods=['POST'])
 def create_idea():
     """
     Creates a new idea with the json data sent
@@ -74,7 +72,7 @@ def create_idea():
 
 
 # Todo: Requires authentication
-@app.route('/api/ideas/<uuid:iid>', endpoint='delete_idea', methods=['DELETE'])
+@ideas_bp.route('/<uuid:iid>', endpoint='delete_idea', methods=['DELETE'])
 def delete_idea(iid):
     """
     Delete the idea with matching idea_id.
@@ -94,7 +92,7 @@ def delete_idea(iid):
 
 
 # Todo: Requires authentication
-@app.route('/api/ideas/<uuid:iid>/vote', endpoint='upvote', methods=['POST'])
+@ideas_bp.route('/<uuid:iid>/vote', endpoint='upvote', methods=['POST'])
 def vote_idea(iid):
     """
     Increase the vote count of the idea with matching idea_id.

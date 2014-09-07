@@ -9,54 +9,15 @@ from server.exceptions import (
 import json
 
 # Some flask goodies
-from flask import make_response, jsonify, request
+from flask import make_response, jsonify, request, Blueprint
 
 # The model
 from .models import User
 
-# A uuid url converter for flask
-from misc.flask_uuid import FlaskUUID
-FlaskUUID(app)
+users_bp = Blueprint('ws_users', __name__)
 
 
-# Note: This route will probably be taken over by
-# our client - the ideabin website.
-@app.route('/')
-def index():
-    return make_response(jsonify({
-        "message": "If you're looking for the IdeaBin api, "
-                   "start at the /api endpoint."
-    }), 200)
-
-
-@app.route('/api/')
-def api_begins():
-    return make_response(jsonify({
-        "message": "The api is currently being worked on.",
-        "methods":
-        {
-            "GET":
-            [
-                "/api/users/",
-                "/api/users/{user_id}",
-                "/api/ideas/",
-                "/api/ideas/{idea_id}"
-            ],
-            "POST":
-            [
-                "/api/users/",
-                "/api/ideas/"
-            ],
-            "DELETE":
-            [
-                "/api/users/{user_id}",
-                "/api/ideas/{idea_id}"
-            ]
-        }
-    }), 200)
-
-
-@app.route('/api/users/', endpoint='list_users', methods=['GET'])
+@users_bp.route('/', endpoint='list_users', methods=['GET'])
 def get_users():
     """
     Sends a list of users present in the database
@@ -76,7 +37,7 @@ def get_users():
     return resp
 
 
-@app.route('/api/users/<uuid:uid>', endpoint='list_user', methods=['GET'])
+@users_bp.route('/<uuid:uid>', endpoint='list_user', methods=['GET'])
 def get_user(uid):
     """
     Get a specific user with the matching user_id
@@ -89,7 +50,7 @@ def get_user(uid):
     return make_response(jsonify(u.json), 200)
 
 
-@app.route('/api/users/', endpoint='create_user', methods=['POST'])
+@users_bp.route('/', endpoint='create_user', methods=['POST'])
 def create_user():
     """
     Creates a new user with the json data sent
@@ -106,7 +67,7 @@ def create_user():
     return make_response(jsonify(u.json), 200)
 
 
-@app.route('/api/users/<uuid:uid>', endpoint='delete_user', methods=['DELETE'])
+@users_bp.route('/<uuid:uid>', endpoint='delete_user', methods=['DELETE'])
 def delete_user(uid):
     """
     Delete the user with matching user_id
