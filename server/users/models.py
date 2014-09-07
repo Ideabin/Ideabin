@@ -49,10 +49,11 @@ class User(db.Model):
             db.session.add(new_user)
             db.session.commit()
         except SQLexc.IntegrityError as e:
-            # Todo: Raise a proper exception
-            # that the view will catch
+            # Todo: Raise a proper exception that the view will catch
             # raise(e)
             db.session.rollback()
+
+        return new_user
 
     def delete(self):
         """
@@ -60,7 +61,7 @@ class User(db.Model):
         """
         db.session.delete(self)
         db.session.commit()
-        # return self
+        return self
 
     def update(self, **kwargs):
         """
@@ -69,6 +70,7 @@ class User(db.Model):
         for key, value in kwargs.items():
             setattr(self, key, value)
         db.session.commit()
+        return self
 
     @property
     def json(self):

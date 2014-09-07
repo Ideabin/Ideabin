@@ -1,5 +1,12 @@
 # Our application and database
 from server import app, db
+from server.exceptions import (
+    NotFound,
+    ServerError,
+    InvalidRequest,
+)
+
+import json
 
 # Some flask goodies
 from flask import make_response, jsonify, request
@@ -17,8 +24,8 @@ FlaskUUID(app)
 @app.route('/')
 def index():
     return make_response(jsonify({
-        "message": "If you're looking for the IdeaBin api, \
-                     start at the /api endpoint."
+        "message": "If you're looking for the IdeaBin api, "
+                   "start at the /api endpoint."
     }), 200)
 
 
@@ -55,17 +62,18 @@ def get_users():
     Sends a list of users present in the database
     """
     all_users = User.query.all()
+    users = []
     if all_users:
-        users = []
         # Todo: Add paging to retrieve next 50 users and so on
         for u in all_users[0:50]:
             users.append(u.json)
-
-        retData, retStatus = {"users": users}, 200
     else:
         raise NotFound
 
-    return make_response(jsonify(retData), retStatus)
+    # jsonify is not used, because it can't send json lists
+    resp = make_response(json.dumps(users), 200)
+    resp.mimetype = 'application/json'
+    return resp
 
 
 @app.route('/api/users/<uuid:uid>', endpoint='list_user', methods=['GET'])
@@ -90,12 +98,12 @@ def create_user():
     if not request.json:
         raise InvalidRequest
 
-    # TODO: Check for the validity of the input (username, email, existence of
-    # user, etc)
+    # Todo: Check for the validity of the input
+    # (username, email, existence of user, etc)
 
-    User.new(retData['username'], retData['email'])
+    u = User.new(request.json['username'], request.json['email'])
 
-    return make_response(jsonify(retData), retStatus)
+    return make_response(jsonify(u.json), 200)
 
 
 @app.route('/api/users/<uuid:uid>', endpoint='delete_user', methods=['DELETE'])
@@ -108,8 +116,8 @@ def delete_user(uid):
     if not u:
         raise NotFound
 
-    return make_response(jsonify(retData), retStatus)
+    u = User.delete(u)
 
-# TODO: Update user data
+    return make_response(jsonify(u.json), 200)
 
 # Todo: Update user data
