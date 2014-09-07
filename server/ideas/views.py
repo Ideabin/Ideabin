@@ -1,6 +1,12 @@
 # Our application and database
 from server import app, db
-from server.exceptions import NotFound, InvalidRequest
+from server.exceptions import (
+    NotFound,
+    ServerError,
+    InvalidRequest,
+)
+
+import json
 
 # Some flask goodies
 from flask import make_response, jsonify, request
@@ -20,18 +26,17 @@ def get_ideas():
     Sends a list of ideas present in the database
     """
     all_ideas = Idea.query.all()
+    ideas = []
     if all_ideas:
-        ideas = []
-        # Todo: (i)Add paging to retrieve next 50 ideas and so on
+        # Todo: Add paging to retrieve next 50 ideas and so on
         for spark in all_ideas[0:50]:
             ideas.append(spark.json)
-
-        retData, retStatus = {"ideas": ideas}, 200
     else:
-        retData, retStatus = {
-            "error": "There are no ideas in the database."}, 400
+        raise NotFound
 
-    return make_response(jsonify(retData), retStatus)
+    resp = make_response(json.dumps(ideas), 200)
+    resp.mimetype = 'application/json'
+    return resp
 
 
 @app.route('/api/ideas/<uuid:uid>', endpoint='list_idea', methods=['GET'])
@@ -41,12 +46,10 @@ def get_idea(uid):
     """
 
     spark = Idea.query.filter_by(idea_id=uid).first()
-    if spark:
-        retData, retStatus = {"idea": spark.json}, 200
-    else:
+    if not spark:
         raise NotFound
 
-    return make_response(jsonify(retData), retStatus)
+    return make_response(jsonify(spark.json), 200)
 
 
 @app.route('/api/ideas/', endpoint='create_idea', methods=['POST'])
@@ -54,18 +57,20 @@ def create_idea():
     """
     Creates a new idea with the json data sent
     """
-    if request.json:
-        retData, retStatus = request.json, 201
-
-        u = User.query.filter_by(user_id=retData['user_id']).first()
-        if not u:
-            raise InvalidRequest('The specified user does not exist.')
-
-        Idea.new(retData['title'], retData['desc'], retData['user_id'])
-    else:
+    if not request.json:
         raise InvalidRequest
 
-    return make_response(jsonify(retData), retStatus)
+    u = User.query.filter_by(user_id=request.json['user_id']).first()
+    if not u:
+        raise InvalidRequest('The specified user does not exist.')
+
+    i = Idea.new(
+        request.json['title'],
+        request.json['desc'],
+        request.json['user_id']
+    )
+
+    return make_response(jsonify(i.json), 200)
 
 
 # Todo: Requires authentication
@@ -74,23 +79,18 @@ def delete_idea(iid):
     """
     Delete the idea with matching idea_id.
     """
-    if request.json:
-        retData, retStatus = request.json, 201
+    # user_id = get_current_user() # from oauth
+    #
+    # Todo: Delete the idea only if it was created by
+    # the current user.
 
-        # user_id = get_current_user() # from oauth
-        #
-        # Todo: Delete the idea only if it was created by
-        # the current user.
+    spark = Idea.query.filter_by(idea_id=iid).first()
+    if not spark:
+        raise NotFound
 
-        spark = Idea.query.filter_by(idea_id=iid).first()
-        if spark:
-            Idea.delete(spark)
-        else:
-            raise NotFound
-    else:
-        raise InvalidRequest
+    i = Idea.delete(spark)
 
-    return make_response(jsonify(spark.json), 200)
+    return make_response(jsonify(i.json), 200)
 
 
 # Todo: Requires authentication
@@ -99,23 +99,18 @@ def vote_idea(iid):
     """
     Increase the vote count of the idea with matching idea_id.
     """
-    if request.json:
-        retData, retStatus = request.json, 201
+    # user_id = get_current_user() # from oauth
+    #
+    # Todo: Check whether the user has already voted
+    # and decide whether to upvote or downvote.
 
-        # user_id = get_current_user() # from oauth
-        #
-        # Todo: Check whether the user has already voted
-        # and decide whether to upvote or downvote.
+    spark = Idea.query.filter_by(idea_id=iid).first()
+    if not spark:
+        raise NotFound
 
-        spark = Idea.query.filter_by(idea_id=iid).first()
-        if spark:
-            Idea.voting(spark)
-        else:
-            raise NotFound
-    else:
-        raise InvalidRequest
+    i = Idea.voting(spark)
 
-    return make_response(jsonify(spark.json), 200)
+    return make_response(jsonify(i.json), 200)
 
-# TODO: (i)Update idea
-# TODO: (i)Comment on idea
+# Todo: Update idea
+# Todo: Comment on idea

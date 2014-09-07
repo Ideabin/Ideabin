@@ -32,7 +32,7 @@ class Idea(db.Model):
     created_on = db.Column(
         db.DateTime, default=dt.datetime.utcnow(), nullable=False)
 
-    # TODO: (i)Tags
+    # Todo: Tags
 
     def __init__(self, title, desc, user_id):
         self.title = title
@@ -47,14 +47,10 @@ class Idea(db.Model):
         Add a new idea to the database
         """
         new_idea = Idea(title, desc, user_id)
-        try:
-            db.session.add(new_idea)
-            db.session.commit()
-        except SQLexc.IntegrityError as e:
-            # Todo: (i)Raise a proper exception
-            # that the view will catch
-            # raise(e)
-            db.session.rollback()
+        db.session.add(new_idea)
+        db.session.commit()
+        new_idea.__repr__()
+        return new_idea
 
     def delete(self):
         """
@@ -62,7 +58,7 @@ class Idea(db.Model):
         """
         db.session.delete(self)
         db.session.commit()
-        # return self
+        return self
 
     def update(self, **kwargs):
         """
@@ -71,6 +67,7 @@ class Idea(db.Model):
         for key, value in kwargs.items():
             setattr(self, key, value)
         db.session.commit()
+        return self
 
     def voting(self):
         """
@@ -78,7 +75,6 @@ class Idea(db.Model):
         """
         self.vote_count += 1
         db.session.commit()
-
         return self
 
     def unvoting(self):
@@ -87,7 +83,6 @@ class Idea(db.Model):
         """
         self.vote_count -= 1
         db.session.commit()
-
         return self
 
     @property
