@@ -71,25 +71,22 @@ def create_idea():
     return make_response(jsonify(retData), retStatus)
 
 
-@app.route('/api/ideas/<uuid:uid>', endpoint='delete_idea', methods=['DELETE'])
-def delete_idea(uid):
+# Todo: Requires authentication
+@app.route('/api/ideas/<uuid:iid>', endpoint='delete_idea', methods=['DELETE'])
+def delete_idea(iid):
     """
     Delete the idea with matching idea_id.
     """
     if request.json:
         retData, retStatus = request.json, 201
 
-        # Checks for the user.
-        u = User.query.filter_by(user_id=retData['user_id']).first()
-        if not u:
-            retData, retStatus = {
-                "error": "The specified user does not exist."}, 400
-            return make_response(jsonify(retData), retStatus)
+        # user_id = get_current_user() # from oauth
+        #
+        # Todo: Delete the idea only if it was created by
+        # the current user.
 
-        # gets the idea and deletes it.
-        spark = Idea.query.filter_by(idea_id=uid).first()
+        spark = Idea.query.filter_by(idea_id=iid).first()
         if spark:
-            retData, retStatus = {"idea": spark.json}, 200
             Idea.delete(spark)
         else:
             retData, retStatus = {
@@ -98,31 +95,26 @@ def delete_idea(uid):
         retData, retStatus = {
             "error": "The input data sent should be json."}, 400
 
-    return make_response(jsonify(retData), retStatus)
+    return make_response(jsonify(spark.json), 200)
 
 
-@app.route('/api/ideas/<uuid:uid>', endpoint='upvote', methods=['POST'])
-def vote_idea(uid):
+# Todo: Requires authentication
+@app.route('/api/ideas/<uuid:iid>/vote', endpoint='upvote', methods=['POST'])
+def vote_idea(iid):
     """
     Increase the vote count of the idea with matching idea_id.
     """
     if request.json:
         retData, retStatus = request.json, 201
 
-        # Checks for the user.
-        u = User.query.filter_by(user_id=retData['user_id']).first()
-        if not u:
-            retData, retStatus = {
-                "error": "The specified user does not exist."}, 400
-            return make_response(jsonify(retData), retStatus)
+        # user_id = get_current_user() # from oauth
+        #
+        # Todo: Check whether the user has already voted
+        # and decide whether to upvote or downvote.
 
-        # Todo: check if the user has already voted. If yes then call "voting"
-        # else "unvoting".
-        spark = Idea.query.filter_by(idea_id=uid).first()
+        spark = Idea.query.filter_by(idea_id=iid).first()
         if spark:
             Idea.voting(spark)
-            spark = Idea.query.filter_by(idea_id=uid).first()
-            retData, retStatus = {"idea": spark.json}, 200
         else:
             retData, retStatus = {
                 "error": "The specified idea does not exist."}, 400
