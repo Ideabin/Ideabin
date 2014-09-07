@@ -1,5 +1,7 @@
-# Run a test server.
 from server import app
+
+from server.errors import init_error_handlers
+init_error_handlers(app)
 
 # Import all views
 from server.users.views import *

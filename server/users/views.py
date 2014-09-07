@@ -63,7 +63,7 @@ def get_users():
 
         retData, retStatus = {"users": users}, 200
     else:
-        retData = {"error": "There are no users in the database."}
+        raise NotFound
 
     return make_response(jsonify(retData), retStatus)
 
@@ -75,12 +75,10 @@ def get_user(uid):
     """
 
     u = User.query.filter_by(user_id=uid).first()
-    if u:
-        retData, retStatus = {"user": u.json}, 200
-    else:
-        retData = {"error": "The specified user does not exist."}
+    if not u:
+        raise NotFound
 
-    return make_response(jsonify(retData), retStatus)
+    return make_response(jsonify(u.json), 200)
 
 
 @app.route('/api/users/', endpoint='create_user', methods=['POST'])
@@ -89,11 +87,8 @@ def create_user():
     Creates a new user with the json data sent
     """
 
-    if request.json:
-        retData, retStatus = request.json, 201
-    else:
-        retData, retStatus = {
-            "error": "The input data sent should be json."}, 400
+    if not request.json:
+        raise InvalidRequest
 
     # TODO: Check for the validity of the input (username, email, existence of
     # user, etc)
@@ -110,28 +105,11 @@ def delete_user(uid):
     """
 
     u = User.query.filter_by(user_id=uid).first()
-    if u:
-        retData, retStatus = {"user": u.json}, 200
-    else:
-        retData, retStatus = {
-            "error": "The specified user does not exist."}, 404
-
-    User.delete(u)
+    if not u:
+        raise NotFound
 
     return make_response(jsonify(retData), retStatus)
 
 # TODO: Update user data
 
-
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({
-        "error": "Whatever it is that you're looking for - it ain't here son!"
-    }), 404)
-
-
-@app.errorhandler(405)
-def not_allowed(error):
-    return make_response(jsonify({
-        "error": "This method is not allowed for the following URL."
-    }), 405)
+# Todo: Update user data

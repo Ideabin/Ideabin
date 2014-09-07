@@ -1,12 +1,13 @@
 # Our application and database
 from server import app, db
-from server.users.models import User
+from server.exceptions import NotFound, InvalidRequest
 
 # Some flask goodies
 from flask import make_response, jsonify, request
 
-# The model
+# The models
 from .models import Idea
+from server.users.models import User
 
 # A uuid url converter for flask
 from misc.flask_uuid import FlaskUUID
@@ -43,8 +44,7 @@ def get_idea(uid):
     if spark:
         retData, retStatus = {"idea": spark.json}, 200
     else:
-        retData, retStatus = {
-            "error": "The specified idea does not exist."}, 400
+        raise NotFound
 
     return make_response(jsonify(retData), retStatus)
 
@@ -59,14 +59,11 @@ def create_idea():
 
         u = User.query.filter_by(user_id=retData['user_id']).first()
         if not u:
-            retData, retStatus = {
-                "error": "The specified user does not exist."}, 400
-            return make_response(jsonify(retData), retStatus)
+            raise InvalidRequest('The specified user does not exist.')
 
         Idea.new(retData['title'], retData['desc'], retData['user_id'])
     else:
-        retData, retStatus = {
-            "error": "The input data sent should be json."}, 400
+        raise InvalidRequest
 
     return make_response(jsonify(retData), retStatus)
 
@@ -89,11 +86,9 @@ def delete_idea(iid):
         if spark:
             Idea.delete(spark)
         else:
-            retData, retStatus = {
-                "error": "The specified idea does not exist."}, 400
+            raise NotFound
     else:
-        retData, retStatus = {
-            "error": "The input data sent should be json."}, 400
+        raise InvalidRequest
 
     return make_response(jsonify(spark.json), 200)
 
@@ -116,27 +111,11 @@ def vote_idea(iid):
         if spark:
             Idea.voting(spark)
         else:
-            retData, retStatus = {
-                "error": "The specified idea does not exist."}, 400
+            raise NotFound
     else:
-        retData, retStatus = {
-            "error": "The input data sent should be json."}, 400
+        raise InvalidRequest
 
-    return make_response(jsonify(retData), retStatus)
+    return make_response(jsonify(spark.json), 200)
 
 # TODO: (i)Update idea
 # TODO: (i)Comment on idea
-
-
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({
-        "error": "Whatever it is that you're looking for - it ain't here son!"
-    }), 404)
-
-
-@app.errorhandler(405)
-def not_allowed(error):
-    return make_response(jsonify({
-        "error": "This method is not allowed for the following URL."
-    }), 405)
