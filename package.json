@@ -1,5 +1,5 @@
 {
-    "name": "picard-website",
+    "name": "ideabin",
     "version": "0.0.0",
     "dependencies" : {
         "less" : ">=1.5.0",
