@@ -1,0 +1,37 @@
+a
+{
+   &:visited
+   {
+      color: darken(@link-color, 20%);
+   }
+
+   // Removes those silly dotted lines FF shows
+   &:hover, :active, :focus
+   {
+      outline: none !important;
+      text-decoration: underline;
+   }
+}
+
+.navbar
+{
+   margin: 0px;
+   border-width: 0 0 5px;
+   .navbar-brand
+   {
+      font-size: 20px;
+   }
+}
+
+.jumbotron {
+   padding: 15px;
+}
+
+.footer
+{
+   text-align: center;
+   padding: 30px 0px;
+   margin-top: 70px;
+   border-top: 1px solid #E5E5E5;
+   background-color: #F5F5F5;
+}
