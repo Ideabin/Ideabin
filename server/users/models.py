@@ -18,7 +18,7 @@ class User(db.Model):
     user_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
     username = db.Column(db.String(80), unique=True)
     email = db.Column(db.String(120), unique=True)
-    # password = db.Column(db.String(180))
+    password = db.Column(db.String(180), nullable=False)
     first_name = db.Column(db.String(120), default='')
     last_name = db.Column(db.String(120), default='')
 
@@ -35,7 +35,7 @@ class User(db.Model):
     def __init__(self, username, email):
         self.username = username
         self.email = email
-        # self.password = password
+        self.password = password
 
     def __repr__(self):
         return '<User %r>' % self.username
