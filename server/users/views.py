@@ -7,14 +7,33 @@ from server.exceptions import (
 )
 
 import json
+import re
 
 # Some flask goodies
 from flask import make_response, jsonify, request, Blueprint
+from flask.ext.restful import reqparse
 
 # The model
 from .models import User
 
 users_bp = Blueprint('ws_users', __name__)
+parser = reqparse.RequestParser()
+
+
+def email(email_str):
+    """ return True if email_str is a valid email """
+    if re.match("[^@]+@[^@]+\.[^@]+", email_str):
+        return True
+    else:
+        raise ValidationError("{} is not a valid email")
+
+
+def string(string_str):
+    """ returns true if string_str is a valid username string """
+    if not (len(string_str) < 1 or string_str.isdigit()):
+        return True
+    else:
+        raise ValidationError("{} is not a valid username string")
 
 
 @users_bp.route('/', endpoint='list_users', methods=['GET'])
@@ -59,8 +78,22 @@ def create_user():
     if not request.json:
         raise InvalidRequest
 
-    # Todo: Check for the validity of the input
-    # (username, email, existence of user, etc)
+    parser.add_argument(
+        'username',
+        type=string,
+        required=True,
+        # location='form',
+        help='username needs to be of string type and can\'t .'
+    )
+    parser.add_argument(
+        'email',
+        type=email,
+        required=True,
+        # location='form',
+        help='Rate to charge for this resource'
+    )
+
+    args = parser.parse_args()
 
     u = User.new(
         request.json['username'],
@@ -80,6 +113,8 @@ def delete_user(uid):
     u = User.query.filter_by(user_id=uid).first()
     if not u:
         raise NotFound
+
+    # todo: user verification to delete the user
 
     u = User.delete(u)
 
