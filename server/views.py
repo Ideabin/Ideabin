@@ -11,20 +11,20 @@ def api_begins():
         {
             "GET":
             [
-                "/api/users/",
-                "/api/users/{user_id}",
-                "/api/ideas/",
-                "/api/ideas/{idea_id}"
+                "/api/1/users/",
+                "/api/1/users/{user_id}",
+                "/api/1/ideas/",
+                "/api/1/ideas/{idea_id}"
             ],
             "POST":
             [
-                "/api/users/",
-                "/api/ideas/"
+                "/api/1/users/",
+                "/api/1/ideas/"
             ],
             "DELETE":
             [
-                "/api/users/{user_id}",
-                "/api/ideas/{idea_id}"
+                "/api/1/users/{user_id}",
+                "/api/1/ideas/{idea_id}"
             ]
         }
     }), 200)

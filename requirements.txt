@@ -1,13 +1,13 @@
 Flask==0.10.1
 Flask-SQLAlchemy==1.0
 Jinja2==2.7.2
-MarkupSafe==0.23
+markupsafe==0.23
 PyMySQL==0.6.2
 SQLAlchemy==0.9.4
-Werkzeug==0.9.4
+werkzeug==0.9.4
 itsdangerous==0.24
 --allow-external mysql-connector-python
 mysql-connector-python==1.2.2
 alembic==0.6.5
 pep8==1.5.7
-
+flask-restful==0.2.12
