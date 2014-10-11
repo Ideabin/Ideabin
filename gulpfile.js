@@ -13,7 +13,7 @@ gulp.task('less', function() {
 
 // Run tasks when files in 'static' directory change
 gulp.task('watch', function() {
-    gulp.watch('static/less/**', ['less']);
+    gulp.watch('frontend/static/less/**', ['less']);
 });
 
 gulp.task('default', ['less', 'watch']);
