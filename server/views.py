@@ -1,16 +1,6 @@
 from flask import make_response, jsonify, Blueprint
 
-api_bp = Blueprint('ws_api', __name__)
-root_bp = Blueprint('ws_root', __name__)
-
-
-@root_bp.route('/')
-def index():
-    return make_response(jsonify({
-        "message": "If you're looking for the IdeaBin api, "
-                   "start at the /api/1/ endpoint."
-    }), 200)
-
+api_bp = Blueprint('api', __name__)
 
 @api_bp.route('/')
 def api_begins():

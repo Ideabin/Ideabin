@@ -15,18 +15,18 @@ fileConfig(config.config_file_name)
 import sys
 import os
 sys.path.append(os.getcwd())
-from server import app, db
 
 # All our custom Jazz
 from misc.uuid import UUID
 import sqlalchemy as sa
 sa.UUID = UUID
 
+from misc import db
+target_metadata = db.metadata
+
 # Autogenerate changes based on these models
 from server.users.models import User
 from server.ideas.models import Idea
-
-target_metadata = db.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

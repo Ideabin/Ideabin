@@ -1,5 +1,5 @@
 # Import the database object (db) from the main application module
-from server import db
+from misc import db
 
 # SQLAlchemy Exceptions
 from sqlalchemy import exc as SQLexc

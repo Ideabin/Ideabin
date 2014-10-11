@@ -1,5 +1,5 @@
 # Our application and database
-from server import app, db
+from misc import db
 from server.exceptions import (
     NotFound,
     ServerError,
