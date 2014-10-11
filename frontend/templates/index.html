@@ -1,1 +1,84 @@
-<p>The night belongs to the madmen and poets.</p>
+{% extends 'base.html' %}
+{% block content %}
+  <div class="jumbotron masthead">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6" >
+         <h1>IdeaBin</h1>
+         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Corporis ratione inventore voluptatibus, voluptatum cumque perferendis vel laboriosam quis repellendus culpa, repudiandae magni officia facere.</p>
+         <!-- Todo: Remove all inline CSS styles. -->
+         <a href="/add/" class="btn btn-primary btn-lg" style="color: white;">Post an Idea</a>
+        </div>
+        <div class="col-md-6">
+          <form role="form" class="form-group">
+            <div class="form-group col-md-8 col-md-offset-3">
+              <input type="text" class="form-control input-lg" id="username" placeholder="Pick a username">
+            </div>
+
+            <div class="form-group col-md-8 col-md-offset-3">
+             <input type="email" class="form-control input-lg" id="email" placeholder="Your Email">
+            </div>
+
+            <div class="form-group col-md-8 col-md-offset-3">
+              <input type="password" class="form-control input-lg" id="password" placeholder="Create a password">
+            </div>
+
+            <div class="form-group col-md-8 col-md-offset-3">
+              <button type="submit" class="btn btn-success btn-lg btn-block">Sign up</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="container">
+    <div class="features">
+      <div class="row">
+        <div class="col-md-4">
+          <div class="col-md-10 col-md-offset-1">
+            <i class="fa fa-align-justify fa-5x"></i>
+            <h2>Lorem</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quis voluptas itaque non minus rerum, laborum dolorum perferendis similique rem.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="col-md-10 col-md-offset-1">
+            <i class="fa fa-align-justify fa-5x"></i>
+            <h2>Lorem</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facere consequatur suscipit blanditiis repellat quibusdam necessitatibus porro.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="col-md-10 col-md-offset-1">
+            <i class="fa fa-align-justify fa-5x"></i>
+            <h2>Lorem</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni vitae molestias impedit quae neque eveniet dolores excepturi nihil, iste.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 col-md-offset-1">
+          <div class="col-md-10 col-md-offset-3">
+            <i class="fa fa-align-justify fa-5x"></i>
+            <h2>Lorem</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni vitae molestias impedit quae neque eveniet dolores excepturi nihil, iste.</p>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-md-offset-1">
+          <div class="col-md-10 col-md-offset-1">
+            <i class="fa fa-align-justify fa-5x"></i>
+            <h2>Lorem</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni vitae molestias impedit quae neque eveniet dolores excepturi nihil, iste.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}

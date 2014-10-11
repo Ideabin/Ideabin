@@ -3,9 +3,14 @@ from flask import (
     Blueprint
 )
 
-index_bp = Blueprint('index', __name__)
+frontend_bp = Blueprint('frontend', __name__)
 
 
-@index_bp.route('/')
-def show_index():
+@frontend_bp.route('/')
+def homepage():
     return render_template('index.html')
+
+
+@frontend_bp.route('/add/')
+def add_idea():
+    return render_template('add_idea.html')

@@ -8,8 +8,8 @@ def create_app():
     app.config.from_object('config')
 
     # Blueprints
-    from frontend.views import index_bp
+    from frontend.views import frontend_bp
 
-    app.register_blueprint(index_bp)
+    app.register_blueprint(frontend_bp)
 
     return app
