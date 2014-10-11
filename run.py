@@ -4,6 +4,7 @@ from server import create_app as ws_create_app
 from werkzeug.serving import run_simple
 from werkzeug.wsgi import DispatcherMiddleware
 
+
 # Note: This function will be removed during deployment.
 def extra_files():
     """

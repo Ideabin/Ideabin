@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 # by modules and controllers
 db = SQLAlchemy()
 
+
 def create_tables(app):
     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
     db.metadata.create_all(engine)

@@ -2,6 +2,7 @@ from flask import make_response, jsonify, Blueprint
 
 api_bp = Blueprint('api', __name__)
 
+
 @api_bp.route('/')
 def api_begins():
     return make_response(jsonify({
