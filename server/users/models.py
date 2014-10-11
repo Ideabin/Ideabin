@@ -32,19 +32,19 @@ class User(db.Model):
     created_on = db.Column(db.DateTime, default=dt.datetime.utcnow())
     last_login_on = db.Column(db.DateTime, default=dt.datetime.utcnow())
 
-    def __init__(self, username, email):
+    def __init__(self, username, password, email):
         self.username = username
-        self.email = email
         self.password = password
+        self.email = email
 
     def __repr__(self):
         return '<User %r>' % self.username
 
-    def new(username, email):
+    def new(username, password, email):
         """
         Add a new user to the database
         """
-        new_user = User(username, email)
+        new_user = User(username, password, email)
         try:
             db.session.add(new_user)
             db.session.commit()
@@ -53,6 +53,7 @@ class User(db.Model):
             # raise(e)
             db.session.rollback()
 
+        new_user.__repr__()
         return new_user
 
     def delete(self):

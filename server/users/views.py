@@ -62,7 +62,11 @@ def create_user():
     # Todo: Check for the validity of the input
     # (username, email, existence of user, etc)
 
-    u = User.new(request.json['username'], request.json['email'])
+    u = User.new(
+        request.json['username'],
+        request.json['password'],
+        request.json['email']
+    )
 
     return make_response(jsonify(u.json), 200)
 
