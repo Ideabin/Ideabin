@@ -2,6 +2,9 @@ import unittest
 
 from server.users.models import User
 
+from server import create_app
+app = create_app()
+
 
 class UsersTestCase(unittest.TestCase):
 
@@ -12,35 +15,38 @@ class UsersTestCase(unittest.TestCase):
         Add some users to the db and confirm that they have been added
         """
 
-        User.new('admin', 'admin@gmail.com')
-        User.new('guest', 'guest@gmail.com')
+        with app.test_request_context():
+            User.new('admin', 'admin@gmail.com')
+            User.new('guest', 'guest@gmail.com')
 
-        users = User.query.all()
-        self.assertEqual(len(users), 2)
+            users = User.query.all()
+            self.assertEqual(len(users), 2)
 
     def test_update_user(self):
         """
         Try updating the details of a user
         """
 
-        admin = User.query.filter_by(username='admin').first()
-        admin.update(username="root", email="admin@outlook.com")
+        with app.test_request_context():
+            admin = User.query.filter_by(username='admin').first()
+            admin.update(username="root", email="admin@outlook.com")
 
-        self.assertEqual(admin.username, "root")
-        self.assertEqual(admin.email, "admin@outlook.com")
+            self.assertEqual(admin.username, "root")
+            self.assertEqual(admin.email, "admin@outlook.com")
 
-        admin.update(username="admin", email="admin@gmail.com")
+            admin.update(username="admin", email="admin@gmail.com")
 
     def test_delete_user(self):
         """
         Add a dummy user in the db, delete it and then cofirm the deletion.
         """
 
-        User.new('dummy', 'dummy@gmail.com')
-        users = User.query.all()
-        self.assertEqual(len(users), 3)
+        with app.test_request_context():
+            User.new('dummy', 'dummy@gmail.com')
+            users = User.query.all()
+            self.assertEqual(len(users), 3)
 
-        dummy = User.query.filter_by(username='dummy').first()
-        dummy.delete()
-        users = User.query.all()
-        self.assertEqual(len(users), 2)
+            dummy = User.query.filter_by(username='dummy').first()
+            dummy.delete()
+            users = User.query.all()
+            self.assertEqual(len(users), 2)
