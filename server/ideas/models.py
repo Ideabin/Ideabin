@@ -20,11 +20,10 @@ class Idea(db.Model):
         UUID(), db.ForeignKey('user.user_id', ondelete='CASCADE'),
         nullable=False)
     title = db.Column(db.String(500), nullable=False)
-    desc = db.Column(db.String(1000), nullable=False)
-    # status = db.Column(db.String(20), default='')
+    desc = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(20), default='')
 
-    # story = db.Column(db.String(120), default='')
-    # langs = db.Column(db.String(120), default='')
+    story = db.Column(db.Text, default='')
     vote_count = db.Column(db.Integer, default=0)
 
     # Note: The UTC timestamps will be converted to correct timezones
