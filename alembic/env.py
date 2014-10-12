@@ -27,6 +27,8 @@ target_metadata = db.metadata
 # Autogenerate changes based on these models
 from server.users.models import User
 from server.ideas.models import Idea
+from server.tags.models import Tag
+from server.tagging.models import Tagging
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
