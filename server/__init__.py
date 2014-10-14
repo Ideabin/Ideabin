@@ -6,7 +6,7 @@ def create_app():
 
     # Configurations
     app.config.from_object('config')
-    app.config.from_object('secrets')
+    app.config.from_pyfile('secrets', silent=True)
 
     # Error handling
     # import errors

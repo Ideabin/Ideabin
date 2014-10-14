@@ -10,3 +10,5 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector:" \
                           "//user123:pass123@localhost/ideabin"
 DATABASE_CONNECT_OPTIONS = {}
+
+SECRET_KEY = 'thanks-a-lot-mattupstate'

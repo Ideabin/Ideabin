@@ -6,7 +6,7 @@ def create_app():
 
     # Configuration files
     app.config.from_object('config')
-    app.config.from_object('secrets')
+    app.config.from_pyfile('secrets', silent=True)
 
     from misc import db
     db.init_app(app)
