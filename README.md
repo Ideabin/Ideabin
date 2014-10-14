@@ -2,6 +2,6 @@
 
 Ideas are too precious to forget. We store ours here.
 
-## How to fly this spacecraft?
+## Setup Instructions
 
-Read https://github.com/ideabin/web-service/wiki/Setup
+Read https://github.com/ideabin/ideabin/wiki/Setup
