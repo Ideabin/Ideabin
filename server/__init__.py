@@ -1,11 +1,11 @@
 from flask import Flask
 
-
 def create_app():
     app = Flask(__name__)
 
     # Configurations
     app.config.from_object('config')
+    app.config.from_object('secrets')
 
     # Error handling
     # import errors
