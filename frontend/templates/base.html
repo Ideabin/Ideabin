@@ -29,9 +29,14 @@
             <input type="text" class="form-control" style="width: 350px" placeholder="Search">
           </div>
         </form>
+
         <form class="navbar-form navbar-right" role="form">
           <div class="form-group">
-            <a href="/login/" class="btn btn-default">Sign in</a>
+            {% if not current_user or current_user.is_anonymous() %}
+              <a href="/login/" class="btn btn-default">Sign in</a>
+            {% else %}
+              <a href="/logout/" class="btn btn-default">Sign out</a>
+            {% endif %}
           </div>
         </form>
 
@@ -43,11 +48,23 @@
       </div>
     </div>
   </div>
-
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+  <div class="container">
+    <div class="row">
+    <!-- Todo: (3) Style these flash messages -->
+      <ul class=flashes>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
   {% block content %}
   {% endblock %}
   {% block  footer %}
-
   <div class="footer">
     <div class="container">
       <ul class="list-inline">

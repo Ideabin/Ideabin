@@ -11,8 +11,10 @@ import uuid
 # Required for timestamps
 import datetime as dt
 
+from flask_login import UserMixin
 
-class User(db.Model):
+
+class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
     user_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
@@ -39,6 +41,10 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+    @classmethod
+    def get(cls, **kwargs):
+        return cls.query.filter_by(**kwargs).first()
 
     def new(username, password, email):
         """
@@ -83,3 +89,6 @@ class User(db.Model):
             if not prop.startswith('_'):
                 json.update({prop: str(val)})
         return json
+
+    def get_id(self):
+        return str(self.user_id)

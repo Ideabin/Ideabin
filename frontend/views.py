@@ -6,11 +6,11 @@ from flask import (
 frontend_bp = Blueprint('frontend', __name__)
 
 
-@frontend_bp.route('/')
+@frontend_bp.route('/', endpoint='index')
 def homepage():
     return render_template('index.html')
 
 
-@frontend_bp.route('/add/')
+@frontend_bp.route('/add/', endpoint='add')
 def add_idea():
     return render_template('add_idea.html')
