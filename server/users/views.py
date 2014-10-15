@@ -6,6 +6,11 @@ from server.exceptions import (
     InvalidRequest,
 )
 
+from flask_login import (
+    current_user,
+    login_required
+)
+
 import json
 import re
 
@@ -36,7 +41,16 @@ def string(string_str):
         raise ValidationError("{} is not a valid username string")
 
 
-@users_bp.route('/', endpoint='list_users', methods=['GET'])
+@users_bp.route('/me/', endpoint='me', methods=['GET'])
+@login_required
+def get_me():
+    """
+    Return data of whoever is logged in.
+    """
+    return make_response(jsonify(current_user.json), 200)
+
+
+@users_bp.route('/', endpoint='list', methods=['GET'])
 def get_users():
     """
     Sends a list of users present in the database

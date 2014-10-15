@@ -19,6 +19,10 @@ def create_app():
     from misc import db
     db.init_app(app)
 
+    # Login Manager
+    import server.login
+    server.login.login_manager.init_app(app)
+
     # Blueprints
     from server.views import api_bp
     from server.users.views import users_bp
