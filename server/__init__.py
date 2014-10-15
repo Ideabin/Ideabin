@@ -9,8 +9,8 @@ def create_app():
     app.config.from_pyfile('secrets', silent=True)
 
     # Error handling
-    # import errors
-    # errors.init_error_handlers(app)
+    import server.errors
+    errors.init_error_handlers(app)
 
     # A uuid url converter for flask
     from misc.flask_uuid import FlaskUUID

@@ -26,6 +26,12 @@ def init_error_handlers(app):
             NotFound()
         )
 
+    @app.errorhandler(401)
+    def not_found_handler(error):
+        return base_error_handler(
+            Unauthorized()
+        )
+
     @app.errorhandler(500)
     def exception_handler(error):
         return base_error_handler(

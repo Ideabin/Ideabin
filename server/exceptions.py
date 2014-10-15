@@ -17,6 +17,14 @@ class InvalidRequest(BaseError):
         )
 
 
+class Unauthorized(BaseError):
+    def __init__(self, msg=''):
+        super(Unauthorized, self).__init__(
+            msg='You need to be logged in to access this URL.',
+            status=401
+        )
+
+
 class NotFound(BaseError):
     def __init__(self, msg='Not Found'):
         super(NotFound, self).__init__(
