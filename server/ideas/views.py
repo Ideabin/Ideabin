@@ -15,10 +15,10 @@ from flask import make_response, jsonify, request, Blueprint
 from .models import Idea
 from server.users.models import User
 
-ideas_bp = Blueprint('ws_ideas', __name__)
+ideas_bp = Blueprint('ideas', __name__)
 
 
-@ideas_bp.route('/', endpoint='list_ideas', methods=['GET'])
+@ideas_bp.route('/', endpoint='list', methods=['GET'])
 def get_ideas():
     """
     Sends a list of ideas present in the database
@@ -37,7 +37,7 @@ def get_ideas():
     return resp
 
 
-@ideas_bp.route('/<uuid:uid>', endpoint='list_idea', methods=['GET'])
+@ideas_bp.route('/<uuid:uid>', endpoint='id', methods=['GET'])
 def get_idea(uid):
     """
     Get a specific idea with the matching idea_id
@@ -50,7 +50,7 @@ def get_idea(uid):
     return make_response(jsonify(spark.json), 200)
 
 
-@ideas_bp.route('/', endpoint='create_idea', methods=['POST'])
+@ideas_bp.route('/', endpoint='create', methods=['POST'])
 def create_idea():
     """
     Creates a new idea with the json data sent
@@ -72,7 +72,7 @@ def create_idea():
 
 
 # Todo: Requires authentication
-@ideas_bp.route('/<uuid:iid>', endpoint='delete_idea', methods=['DELETE'])
+@ideas_bp.route('/<uuid:iid>', endpoint='delete', methods=['DELETE'])
 def delete_idea(iid):
     """
     Delete the idea with matching idea_id.

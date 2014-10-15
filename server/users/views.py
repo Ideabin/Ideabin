@@ -21,7 +21,7 @@ from flask.ext.restful import reqparse
 # The model
 from .models import User
 
-users_bp = Blueprint('ws_users', __name__)
+users_bp = Blueprint('users', __name__)
 parser = reqparse.RequestParser()
 
 
@@ -70,7 +70,7 @@ def get_users():
     return resp
 
 
-@users_bp.route('/<uuid:uid>', endpoint='list_user', methods=['GET'])
+@users_bp.route('/<uuid:uid>', endpoint='id', methods=['GET'])
 def get_user(uid):
     """
     Get a specific user with the matching user_id
@@ -83,7 +83,7 @@ def get_user(uid):
     return make_response(jsonify(u.json), 200)
 
 
-@users_bp.route('/', endpoint='create_user', methods=['POST'])
+@users_bp.route('/', endpoint='create', methods=['POST'])
 def create_user():
     """
     Creates a new user with the json data sent
@@ -118,7 +118,7 @@ def create_user():
     return make_response(jsonify(u.json), 200)
 
 
-@users_bp.route('/<uuid:uid>', endpoint='delete_user', methods=['DELETE'])
+@users_bp.route('/<uuid:uid>', endpoint='delete', methods=['DELETE'])
 def delete_user(uid):
     """
     Delete the user with matching user_id
