@@ -19,6 +19,7 @@ from misc.parser import Parser
 
 from .models import Idea
 from server.users.models import User
+from server.votes.models import Vote
 
 ideas_bp = Blueprint('ideas', __name__)
 
@@ -90,24 +91,26 @@ def delete_idea(iid):
     return make_response('', 204)
 
 
-# Todo: Requires authentication
 @ideas_bp.route('/<uuid:iid>/vote', endpoint='upvote', methods=['POST'])
+@login_required
 def vote_idea(iid):
     """
     Increase the vote count of the idea with matching idea_id.
     """
-    # user_id = get_current_user() # from oauth
-    #
-    # Todo: Check whether the user has already voted
-    # and decide whether to upvote or downvote.
+    user_id = current_user.user_id
 
     spark = Idea.query.filter_by(idea_id=iid).first()
     if not spark:
         raise NotFound
 
-    i = Idea.voting(spark)
+    voted = Vote.query.filter_by(user_id=user_id, idea_id=iid)
+    if not voted:
+        i = Idea.voting(spark)
+        Vote.new(user_id, iid)
+    else:
+        i = Idea.unvoting(spark)
+        Vote.delete(voted)
 
     return make_response(jsonify(i.json), 200)
 
 # Todo: Update idea
-# Todo: Comment on idea

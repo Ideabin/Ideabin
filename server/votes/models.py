@@ -16,8 +16,8 @@ class Vote(db.Model):
     __tablename__ = 'vote'
 
     user_id = db.Column(
-        UUID(), db.ForeignKey('user.user_id', ondelete='CASCADE', ),
-        nullable=False, primary_key=True, )
+        UUID(), db.ForeignKey('user.user_id', ondelete='CASCADE'),
+        nullable=False, primary_key=True)
     idea_id = db.Column(
         UUID(), db.ForeignKey('idea.idea_id', ondelete='CASCADE'),
         nullable=False, primary_key=True)
