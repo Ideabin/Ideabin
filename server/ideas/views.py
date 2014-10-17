@@ -21,6 +21,7 @@ from .models import Idea
 from server.users.models import User
 from server.votes.models import Vote
 from server.subscriptions.models import IdeaSub
+from server.reports.models import Report
 
 ideas_bp = Blueprint('ideas', __name__)
 
@@ -162,5 +163,26 @@ def toggle_subscription(idea_id):
         msg = "You are now unsubscribed."
 
     return make_response(jsonify({"message": msg}), 200)
+
+
+@ideas_bp.route('/<uuid:idea_id>/report/', endpoint='report', methods=['POST'])
+@login_required
+def report_idea(idea_id):
+    """
+    Reports on an idea.
+    """
+
+    spark = Idea.query.filter_by(idea_id=idea_id).first()
+    if not spark:
+        raise NotFound
+
+    user_id = current_user.user_id
+    reported = Report.query.filter_by(user_id=user_id, idea_id=idea_id)
+    if not reported:
+        report = Report.new(user_id, idea_id)
+    else:
+        raise Conflict('You have already reported this idea.')
+
+    return make_response(jsonify(report.json), 200)
 
 # Todo: Update idea
