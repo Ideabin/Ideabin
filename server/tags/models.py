@@ -16,39 +16,30 @@ class Tag(db.Model):
     __tablename__ = 'tag'
 
     tag_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
-    idea_id = db.Column(
-        UUID(), db.ForeignKey('idea.idea_id', ondelete='CASCADE'),
-        nullable=False)
     tagname = db.Column(db.String(500), nullable=False)
 
+    desc = db.Column(db.Text(), default='')
     # Note: The UTC timestamps will be converted to correct timezones
     # by the client
     created_on = db.Column(
         db.DateTime, default=dt.datetime.utcnow(), nullable=False)
 
-    def __init__(self, tagname, idea_id):
-        self.title = tagname
-        self.idea_id = idea_id
+    def __init__(self, tagname, desc):
+        self.tagname = tagname
+        self.desc = desc
 
     def __repr__(self):
         return '<Tag %r>' % self.tagname
 
-    def new(tagname, idea_id):
+    def new(tagname, desc=''):
         """
         Add a new tag to the database
         """
-        new_tag = Tag(tagname, idea_id)
-        try:
-            db.session.add(new_tag)
-            db.session.commit()
-        except SQLexc.IntegrityError as e:
-            # Todo: (i)Raise a proper exception
-            # that the view will catch
-            # raise(e)
-            db.session.rollback()
+        new_tag = Tag(tagname, desc)
+        db.session.add(new_tag)
+        db.session.commit()
 
         new_tag.__repr__()
-
         return new_tag
 
     def delete(self):
@@ -58,6 +49,19 @@ class Tag(db.Model):
         db.session.delete(self)
         db.session.commit()
         return self
+
+    def update(self, **kwargs):
+        """
+        Update an tag's data to new values.
+        """
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        db.session.commit()
+        return self
+
+    # todo: renaming to a new one or renaming to an existing one.
+    # def rename(self):
+    #     return 0
 
     @property
     def json(self):
