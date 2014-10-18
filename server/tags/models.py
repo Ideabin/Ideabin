@@ -11,6 +11,8 @@ import uuid
 # Required for timestamps
 import datetime as dt
 
+from server.tagging.models import Tagging
+
 
 class Tag(db.Model):
     __tablename__ = 'tag'
@@ -19,8 +21,6 @@ class Tag(db.Model):
     tagname = db.Column(db.String(50), unique=True, nullable=False)
 
     desc = db.Column(db.Text(), default='')
-    # Note: The UTC timestamps will be converted to correct timezones
-    # by the client
     created_on = db.Column(
         db.DateTime, default=dt.datetime.utcnow(), nullable=False)
 
@@ -52,16 +52,24 @@ class Tag(db.Model):
 
     def update(self, **kwargs):
         """
-        Update an tag's data to new values.
+        Update a tag's data to new values.
         """
         for key, value in kwargs.items():
             setattr(self, key, value)
         db.session.commit()
         return self
 
-    # todo: renaming to a new one or renaming to an existing one.
-    # def rename(self):
-    #     return 0
+    @property
+    def ideas(self):
+        """
+        Get all ideas of the tag
+        """
+
+        taggings = Tagging.query.filter_by(tag_id=self.tag_id).all()
+
+        return [str(t.idea_id) for t in taggings]
+
+    # Todo: Renaming to a new (or existing?) one
 
     @property
     def json(self):
@@ -69,7 +77,10 @@ class Tag(db.Model):
         Return the tag's data in json form
         """
         json = {}
+
         for prop, val in vars(self).items():
             if not prop.startswith('_'):
                 json.update({prop: str(val)})
+
+        json.update({"ideas": self.ideas})
         return json

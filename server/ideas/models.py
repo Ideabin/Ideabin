@@ -11,6 +11,9 @@ import uuid
 # Required for timestamps
 import datetime as dt
 
+from server.tags.models import Tag
+from server.tagging.models import Tagging
+
 
 class Idea(db.Model):
     __tablename__ = 'idea'
@@ -86,12 +89,29 @@ class Idea(db.Model):
         return self
 
     @property
+    def tags(self):
+        """
+        Get all tags of the idea
+        """
+
+        taggings = Tagging.query.filter_by(idea_id=self.idea_id).all()
+
+        tags = []
+        for t in taggings:
+            tags.append(Tag.query.filter_by(tag_id=t.tag_id).first().tagname)
+
+        return tags
+
+    @property
     def json(self):
         """
         Return the idea's data in json form
         """
         json = {}
+
         for prop, val in vars(self).items():
             if not prop.startswith('_'):
                 json.update({prop: str(val)})
+
+        json.update({"tags": self.tags})
         return json
