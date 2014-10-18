@@ -20,20 +20,20 @@ def init_error_handlers(app):
             error.status
         )
 
+    @app.errorhandler(ParserError)
+    def parser_error_handler(error):
+        return base_error_handler(
+            InvalidRequest('Parameter `%s`: %s.' % (error.key, error.desc))
+        )
+
     @app.errorhandler(404)
     def not_found_handler(error):
-        return base_error_handler(
-            NotFound()
-        )
+        return base_error_handler(NotFound())
 
     @app.errorhandler(401)
-    def not_found_handler(error):
-        return base_error_handler(
-            Unauthorized()
-        )
+    def not_authorized_handler(error):
+        return base_error_handler(Unauthorized())
 
     @app.errorhandler(500)
-    def exception_handler(error):
-        return base_error_handler(
-            ServerError()
-        )
+    def internal_error_handler(error):
+        return base_error_handler(ServerError())

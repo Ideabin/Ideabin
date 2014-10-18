@@ -41,6 +41,14 @@ class NotAllowed(BaseError):
         )
 
 
+class Conflict(BaseError):
+    def __init__(self, msg='A conflict occurred while processing the data.'):
+        super(Conflict, self).__init__(
+            msg=msg,
+            status=409
+        )
+
+
 class ServerError(BaseError):
     def __init__(self, msg=''):
         super(ServerError, self).__init__(
@@ -48,3 +56,16 @@ class ServerError(BaseError):
                 'prevented it from fulfilling the request.',
             status=500
         )
+
+
+class ParserError(IdeaBinError):
+    def __init__(self, key, desc):
+        self.key = key
+        self.desc = desc
+
+
+class MissingDataError(ParserError):
+    def __init__(self, key):
+        super(MissingDataError, self).__init__(
+            key=key,
+            desc='Missing')

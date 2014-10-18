@@ -1,6 +1,5 @@
 Flask==0.10.1
 Flask-Login==0.2.11
-Flask-RESTful==0.2.12
 Flask-SQLAlchemy==1.0
 Jinja2==2.7.2
 Mako==1.0.0
