@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <title>{% block title %}IdeaBin{% endblock %}</title>
 </head>
-
 <body>
   <div class="navbar navbar-default navbar-static-top" role="navigation">
     <div class="container">
@@ -50,22 +49,21 @@
       </div>
     </div>
   </div>
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
+
+  {% with messages = get_flashed_messages() %} {% if messages %}
   <div class="container">
-    <div class="row">
-    <!-- Todo: (3) Style these flash messages -->
-      <ul class=flashes>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-      </ul>
+    <div class="row col-md-6 col-md-offset-3" style="margin-top: 30px; margin-bottom: -30px;">
+      <div id="flash" class="alert alert-info">
+        <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
-  {% endif %}
-  {% endwith %}
-  {% block content %}
-  {% endblock %}
+  {% endif %} {% endwith %}
+  {% block content %} {% endblock %}
   {% block  footer %}
   <div class="footer">
     <div class="container">
@@ -80,6 +78,9 @@
   {% block scripts %}
   <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+  {% endblock %}
+
+  {% block script %}
   {% endblock %}
 </body>
 </html>
