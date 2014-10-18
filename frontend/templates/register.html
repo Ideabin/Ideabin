@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="container">
+    <div class="row col-md-4 col-md-offset-4" style="margin-top:50px;">
+      <form class="form-signin" role="form" method="post">
+        <div class="form-group">
+          <h2>Sign up</h2>
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="username" class="form-control input-lg" placeholder="Pick a username" required autofocus>
+        </div>
+
+        <div class="form-group">
+          <input type="text" name="email" class="form-control input-lg" placeholder="Your Email" required autofocus>
+        </div>
+
+        <div class="form-group">
+          <input type="password" name="password" class="form-control input-lg" placeholder="Create a password" required>
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+        </div>
+
+        <div class="form-group pull-right" style="margin-bottom: 70px;">
+          <a href="/login/">Already registerd?</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

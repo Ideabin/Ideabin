@@ -14,3 +14,8 @@ def homepage():
 @frontend_bp.route('/add/', endpoint='add')
 def add_idea():
     return render_template('add_idea.html')
+
+
+@frontend_bp.route('/register/', endpoint='register')
+def register():
+    return render_template('register.html')
