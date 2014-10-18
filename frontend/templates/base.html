@@ -30,6 +30,7 @@
           </div>
         </form>
 
+        {% if request.path != "/login/"%}
         <form class="navbar-form navbar-right" role="form">
           <div class="form-group">
             {% if not current_user or current_user.is_anonymous() %}
@@ -39,6 +40,7 @@
             {% endif %}
           </div>
         </form>
+        {% endif %}
 
         <ul class="nav navbar-nav">
           <li>
