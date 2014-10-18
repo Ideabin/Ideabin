@@ -20,6 +20,7 @@ from misc.parser import Parser
 from .models import Idea
 from server.users.models import User
 from server.votes.models import Vote
+from server.subs.models import ISub
 
 ideas_bp = Blueprint('ideas', __name__)
 
@@ -114,5 +115,23 @@ def vote_idea(idea_id):
         Vote.delete(voted)
 
     return make_response(jsonify({"vote_count": idea.vote_count}), 200)
+
+
+# Todo: Requires authentication
+@ideas_bp.route('/<uuid:iid>/sub', endpoint='subscription', methods=['POST'])
+def sub_unsub_idea(iid):
+    """
+    Subscribes on an idea
+    """
+    # user_id = get_current_user() # from oauth
+
+    sub = ISub.query.filter_by(user_id=user_id, idea_id=iid).first()
+    if not sub:
+        ISub.new(user_id, iid)
+        return "you are subscribed"
+    else:
+        ISub.delete(sub)
+        return "you are un-subscribed"
+
 
 # Todo: Update idea

@@ -21,6 +21,7 @@ from misc.parser import Parser
 from server.exceptions import *
 
 from .models import User
+from server.subs.models import USub
 
 users_bp = Blueprint('users', __name__)
 
@@ -110,5 +111,24 @@ def delete_user(uid):
     u = User.delete(u)
 
     return make_response(jsonify(u.json), 200)
+
+
+# Todo: Requires authentication
+@users_bp.route('/<uuid:uid>/sub', endpoint='subscription', methods=['POST'])
+def sub_unsub_user(uid):
+    """
+    Subscribes on an user
+    """
+    # user_id = get_current_user() # from oauth
+
+    if user_id == uid:
+        raise NotAllowed
+    sub = USub.query.filter_by(sub_to=uid, sub_by=user_id).first()
+    if not sub:
+        USub.new(uid, user_id)
+        return "you are subscribed"
+    else:
+        USub.delete(sub)
+        return "you are un-subscribed"
 
 # Todo: Update user data
