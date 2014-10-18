@@ -9,6 +9,7 @@ from flask import (
 
 from flask_login import (
     current_user,
+    login_user,
     login_required
 )
 
@@ -89,6 +90,8 @@ def create_user():
         raise Conflict('The user already exists.')
 
     new = User.new(username, password, email)
+    # Note: The API shouldn't be logging in user
+    login_user(new)
     return make_response(jsonify(new.json), 201)
 
 
