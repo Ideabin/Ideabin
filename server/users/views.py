@@ -1,9 +1,10 @@
-# Our application and database
-from misc import db
-from server.exceptions import (
-    NotFound,
-    ServerError,
-    InvalidRequest,
+import json
+
+from flask import (
+    make_response,
+    jsonify,
+    request,
+    Blueprint
 )
 
 from flask_login import (
@@ -11,34 +12,16 @@ from flask_login import (
     login_required
 )
 
-import json
-import re
+from sqlalchemy import or_
 
-# Some flask goodies
-from flask import make_response, jsonify, request, Blueprint
-from flask.ext.restful import reqparse
+from misc import db
+from misc.parser import Parser
 
-# The model
+from server.exceptions import *
+
 from .models import User
 
 users_bp = Blueprint('users', __name__)
-parser = reqparse.RequestParser()
-
-
-def email(email_str):
-    """ return True if email_str is a valid email """
-    if re.match("[^@]+@[^@]+\.[^@]+", email_str):
-        return True
-    else:
-        raise ValidationError("{} is not a valid email")
-
-
-def string(string_str):
-    """ returns true if string_str is a valid username string """
-    if not (len(string_str) < 1 or string_str.isdigit()):
-        return True
-    else:
-        raise ValidationError("{} is not a valid username string")
 
 
 @users_bp.route('/me/', endpoint='me', methods=['GET'])
@@ -92,30 +75,21 @@ def create_user():
     if not request.json:
         raise InvalidRequest
 
-    parser.add_argument(
-        'username',
-        type=string,
-        required=True,
-        # location='form',
-        help='username needs to be of string type and can\'t .'
-    )
-    parser.add_argument(
-        'email',
-        type=email,
-        required=True,
-        # location='form',
-        help='Rate to charge for this resource'
-    )
+    username = Parser.string('username')
+    email = Parser.email('email')
+    password = Parser.anything('password')
 
-    args = parser.parse_args()
+    u = User.query.filter(
+        or_(
+            User.username == username,
+            User.email == email)
+        ).first()
 
-    u = User.new(
-        request.json['username'],
-        request.json['password'],
-        request.json['email']
-    )
+    if u:
+        raise Conflict('The user already exists.')
 
-    return make_response(jsonify(u.json), 200)
+    new = User.new(username, password, email)
+    return make_response(jsonify(new.json), 201)
 
 
 @users_bp.route('/<uuid:uid>', endpoint='delete', methods=['DELETE'])
