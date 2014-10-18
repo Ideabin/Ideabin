@@ -1,23 +1,17 @@
-# Import the database object (db) from the main application module
 from misc import db
 
-# SQLAlchemy Exceptions
 from sqlalchemy import exc as SQLexc
 
-# UUID type for SQLAlchemy
 from misc.uuid import UUID
 import uuid
-
-# Required for timestamps
-import datetime as dt
 
 
 class Tagging(db.Model):
     __tablename__ = 'tagging'
 
     tag_id = db.Column(
-        UUID(), db.ForeignKey('tag.tag_id', ondelete='CASCADE', ),
-        nullable=False, primary_key=True, )
+        UUID(), db.ForeignKey('tag.tag_id', ondelete='CASCADE'),
+        nullable=False, primary_key=True)
     idea_id = db.Column(
         UUID(), db.ForeignKey('idea.idea_id', ondelete='CASCADE'),
         nullable=False, primary_key=True)
@@ -38,13 +32,9 @@ class Tagging(db.Model):
             db.session.add(new_tag)
             db.session.commit()
         except SQLexc.IntegrityError as e:
-            # Todo: (i)Raise a proper exception
-            # that the view will catch
-            # raise(e)
             db.session.rollback()
 
         new_tag.__repr__()
-
         return new_tag
 
     def delete(self):
@@ -54,14 +44,3 @@ class Tagging(db.Model):
         db.session.delete(self)
         db.session.commit()
         return self
-
-    @property
-    def json(self):
-        """
-        Return the tag's data in json form
-        """
-        json = {}
-        for prop, val in vars(self).items():
-            if not prop.startswith('_'):
-                json.update({prop: str(val)})
-        return json
