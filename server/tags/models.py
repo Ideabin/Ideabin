@@ -16,7 +16,7 @@ class Tag(db.Model):
     __tablename__ = 'tag'
 
     tag_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
-    tagname = db.Column(db.String(500), nullable=False)
+    tagname = db.Column(db.String(50), unique=True, nullable=False)
 
     desc = db.Column(db.Text(), default='')
     # Note: The UTC timestamps will be converted to correct timezones
