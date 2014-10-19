@@ -77,22 +77,17 @@ def create_idea():
 
 # Todo: Requires authentication
 @ideas_bp.route('/<uuid:iid>', endpoint='delete', methods=['DELETE'])
+# @login_required
 def delete_idea(iid):
     """
     Delete the idea with matching idea_id.
     """
-    # user_id = get_current_user() # from oauth
-    #
-    # Todo: Delete the idea only if it was created by
-    # the current user.
-
     spark = Idea.query.filter_by(idea_id=iid).first()
     if not spark:
         raise NotFound
 
-    i = Idea.delete(spark)
-
-    return make_response(jsonify(i.json), 200)
+    Idea.delete(spark)
+    return make_response('', 204)
 
 
 # Todo: Requires authentication
