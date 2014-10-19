@@ -35,23 +35,31 @@ class Idea(db.Model):
     created_on = db.Column(
         db.DateTime, default=dt.datetime.utcnow(), nullable=False)
 
-    # Todo: Tags
-
     def __init__(self, title, desc, user_id):
         self.title = title
-        self.desc = desc
         self.user_id = user_id
+
+        # Todo: Use a markdown converter to convert the md to html
+        self.desc_md = desc
+        self.desc_html = desc
 
     def __repr__(self):
         return '<Idea %r>' % self.title
 
-    def new(title, desc, user_id):
+    def new(title, desc, user_id, tags=None):
         """
         Add a new idea to the database
         """
         new_idea = Idea(title, desc, user_id)
+
+        # Todo: Create taggings with tagnames passed
+        # The tags themselves should be created if they don't exist
+        if tags:
+            pass
+
         db.session.add(new_idea)
         db.session.commit()
+
         new_idea.__repr__()
         return new_idea
 

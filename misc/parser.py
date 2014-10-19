@@ -56,6 +56,7 @@ class Parser(object):
             else:
                 raise MissingDataError(key)
 
+        # Note: Do we have a problem with numbers?
         if _s.isdigit():
             raise ParserError(key, 'Can not be a number')
 
@@ -125,13 +126,16 @@ class Parser(object):
 
     @classmethod
     def list(cls, key, src='json', elements=None, optional=False):
+        """
+        Checks if the key is a comma separated list.
+        """
         _l = cls.get_key(src, key)
-        if _l is None:
+        if not _l:
             if optional:
                 return None
             else:
                 raise MissingDataError(key)
-        _l = _l.split()
+        _l = _l.strip().split(",")
         if elements is not None:
             for e in _l:
                 if e not in elements:

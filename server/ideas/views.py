@@ -1,17 +1,22 @@
-# Our application and database
-from misc import db
-from server.exceptions import (
-    NotFound,
-    ServerError,
-    InvalidRequest,
-)
-
 import json
 
-# Some flask goodies
-from flask import make_response, jsonify, request, Blueprint
+from flask import (
+    make_response,
+    jsonify,
+    request,
+    Blueprint
+)
 
-# The models
+from flask_login import (
+    login_required,
+    current_user
+)
+
+from misc import db
+from server.exceptions import *
+
+from misc.parser import Parser
+
 from .models import Idea
 from server.users.models import User
 
@@ -51,6 +56,7 @@ def get_idea(uid):
 
 
 @ideas_bp.route('/', endpoint='create', methods=['POST'])
+@login_required
 def create_idea():
     """
     Creates a new idea with the json data sent
@@ -58,17 +64,15 @@ def create_idea():
     if not request.json:
         raise InvalidRequest
 
-    u = User.query.filter_by(user_id=request.json['user_id']).first()
-    if not u:
-        raise InvalidRequest('The specified user does not exist.')
+    # Todo: These should probably be a string with some max len
+    title = Parser.anything('title')
+    desc = Parser.anything('desc')
+    status = Parser.string('status', max=20, optional=True)
+    tags = Parser.list('tags', optional=True)
 
-    i = Idea.new(
-        request.json['title'],
-        request.json['desc'],
-        request.json['user_id']
-    )
+    new = Idea.new(title, desc, current_user.user_id, tags)
 
-    return make_response(jsonify(i.json), 200)
+    return make_response(jsonify(new.json), 201)
 
 
 # Todo: Requires authentication
