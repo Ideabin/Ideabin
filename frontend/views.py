@@ -19,3 +19,8 @@ def add_idea():
 @frontend_bp.route('/register/', endpoint='register')
 def register():
     return render_template('register.html')
+
+
+@frontend_bp.route('/explore/', endpoint='explore')
+def register():
+    return render_template('explore.html')
