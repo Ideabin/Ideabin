@@ -1,25 +1,78 @@
 {% extends 'base.html' %}
+{% block script %}
+  <script type="text/javascript">
+    // http://stackoverflow.com/a/1186309/2043048
+    $.fn.serializeObject = function()
+    {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+    $(document).ready(function()
+    {
+      $('#form').submit(function(e)
+      {
+        $.ajax({
+          type: "POST",
+          url: "/api/1/ideas/",
+          data: JSON.stringify($("#form").serializeObject()),
+          contentType: "application/json",
+          success: function(data, tStatus)
+          {
+            console.log(data);
+            document.location.href=data.url;
+          },
+          error:function(jqXHR, tStatus, errorThrown)
+          {
+            data = JSON.parse(jqXHR.responseText);
+            console.log(data);
+
+            if (data.message.indexOf("tags") != -1)
+            {
+               $("input[name='tags']").parent().addClass('has-error');
+               $("input[name='tags']").popover('toggle');
+            }
+          }
+        });
+
+        return e.preventDefault();
+      });
+    });
+  </script>
+{% endblock %}
+
 {% block content %}
    <div class="container">
       <div class="row">
          <div class="col-md-6 col-md-offset-3">
             <h1>Post an Idea</h1>
-            <form role="form">
+            <form id="form" role="form" method="post">
                <div class="form-group">
-                  <input id="title" type="text" class="form-control" placeholder="Title">
+                  <input name="title" type="text" class="form-control" placeholder="Title" required autofocus>
                </div>
 
                <div class="form-group">
-                  <textarea id="content" class="form-control" rows="10" placeholder="Content"></textarea>
+                  <textarea name="desc" class="form-control" rows="10" placeholder="Content" required></textarea>
                </div>
 
                <div class="form-group">
-                  <input id="tags" type="text" class="form-control" placeholder="Put Some Tags">
+                  <input name="tags" type="text" class="form-control" placeholder="Put some tags (comma separated)" data-toggle="popover" data-title="Error ocurred while adding tags." data-container="body" data-content="Please make sure that values are comma separated.">
                </div>
 
-               <!-- Note: What about Previews? -->
+               <!-- Todo: Handle Previews -->
                <button class="btn btn-success">Submit</button>
-               <!-- Todo: Show a Popup via JS -->
+               <!-- Todo: Show a "You'll lose data" Popup via JS -->
                <a id="cancel" href="/" class="btn btn-default">Cancel</a>
             </form>
          </div>

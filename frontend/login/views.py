@@ -36,6 +36,7 @@ def login_handler():
         flash('Username or Password is invalid', 'error')
         return redirect(url_for('login.index'))
 
+    # Todo: Update the last_login_on field to current timestamp
     login_user(registered_user)
     return redirect(request.args.get('next') or url_for('frontend.index'))
 
