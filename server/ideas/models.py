@@ -9,6 +9,7 @@ import uuid
 
 import datetime as dt
 
+from server.users.models import User
 from server.tags.models import Tag
 from server.tagging.models import Tagging
 
@@ -102,6 +103,19 @@ class Idea(db.Model):
         return url_for('ideas.id', uid=self.idea_id, _external=True)
 
     @property
+    def user(self):
+        """
+        Get basic info of the user of current idea
+        """
+        user = User.query.filter_by(user_id=self.user_id).first()
+        json = dict(
+            user_id=str(user.user_id),
+            username=user.username,
+            created_on=user.created_on.strftime('%a, %d %b %Y %H:%M:%S')
+        )
+        return json
+
+    @property
     def tags(self):
         """
         Get all tags of the idea
@@ -120,12 +134,17 @@ class Idea(db.Model):
         """
         Return the idea's data in json form
         """
-        json = {}
-
-        for prop, val in vars(self).items():
-            if not prop.startswith('_'):
-                json.update({prop: str(val)})
-
-        json.update({"tags": self.tags})
-        json.update({"url": self.url})
+        json = dict(
+            idea_id=str(self.idea_id),
+            user_id=str(self.user_id),
+            title=self.title,
+            desc_md=self.desc_md,
+            desc_html=self.desc_html,
+            status=self.status,
+            vote_count=self.vote_count,
+            created_on=self.created_on.strftime('%a, %d %b %Y %H:%M:%S'),
+            tags=self.tags,
+            url=self.url,
+            user=self.user
+        )
         return json

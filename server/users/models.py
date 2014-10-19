@@ -84,10 +84,16 @@ class User(db.Model, UserMixin):
         """
         Return the user's data in json form
         """
-        json = {}
-        for prop, val in vars(self).items():
-            if not prop.startswith('_'):
-                json.update({prop: str(val)})
+        json = dict(
+            user_id=str(self.user_id),
+            username=self.username,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            created_on=self.created_on.strftime('%a, %d %b %Y %H:%M:%S'),
+            blog_url=self.blog_url,
+            profile_fb=self.profile_fb,
+            profile_twitter=self.profile_twitter
+        )
         return json
 
     def get_id(self):
