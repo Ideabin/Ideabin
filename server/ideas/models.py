@@ -1,14 +1,12 @@
-# Import the database object (db) from the main application module
 from misc import db
 
-# SQLAlchemy Exceptions
+from flask import url_for
+
 from sqlalchemy import exc as SQLexc
 
-# UUID type for SQLAlchemy
 from misc.uuid import UUID
 import uuid
 
-# Required for timestamps
 import datetime as dt
 
 from server.tags.models import Tag
@@ -97,6 +95,13 @@ class Idea(db.Model):
         return self
 
     @property
+    def url(self):
+        """
+        Get the url for current idea
+        """
+        return url_for('ideas.id', uid=self.idea_id, _external=True)
+
+    @property
     def tags(self):
         """
         Get all tags of the idea
@@ -122,4 +127,5 @@ class Idea(db.Model):
                 json.update({prop: str(val)})
 
         json.update({"tags": self.tags})
+        json.update({"url": self.url})
         return json
