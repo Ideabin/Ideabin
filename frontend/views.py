@@ -3,6 +3,8 @@ from flask import (
     Blueprint
 )
 
+from server.ideas.models import Idea
+
 frontend_bp = Blueprint('frontend', __name__)
 
 
@@ -22,5 +24,6 @@ def register():
 
 
 @frontend_bp.route('/explore/', endpoint='explore')
-def register():
-    return render_template('explore.html')
+def explore():
+    ideas = Idea.query.limit(50)
+    return render_template('explore.html', ideas=ideas)
