@@ -28,10 +28,12 @@ def create_app():
     from server.users.views import users_bp
     from server.ideas.views import ideas_bp
     from server.tags.views import tags_bp
+    from server.comments.views import comments_bp
 
     app.register_blueprint(api_bp)
     app.register_blueprint(users_bp, url_prefix='/users')
-    app.register_blueprint(ideas_bp, url_prefix='/ideas')
     app.register_blueprint(tags_bp, url_prefix='/tags')
 
+    app.register_blueprint(ideas_bp, url_prefix='/ideas')
+    app.register_blueprint(comments_bp, url_prefix='/ideas')
     return app

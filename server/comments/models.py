@@ -1,19 +1,15 @@
-# Import the database object (db) from the main application module
 from misc import db
 
-# SQLAlchemy Exceptions
 from sqlalchemy import exc as SQLexc
 
-# UUID type for SQLAlchemy
 from misc.uuid import UUID
 import uuid
 
-# Required for timestamps
 import datetime as dt
 
 
-class Comment(db.Model):
-    __tablename__ = 'comment'
+class Comments(db.Model):
+    __tablename__ = 'comments'
 
     comment_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(
@@ -29,20 +25,22 @@ class Comment(db.Model):
     created_on = db.Column(
         db.DateTime, default=dt.datetime.utcnow(), nullable=False)
 
-    def __init__(self, user_id, idea_id, desc_md, desc_html):
+    def __init__(self, user_id, idea_id, desc):
         self.user_id = user_id
         self.idea_id = idea_id
-        self.desc_md = desc_md
-        self.desc_html = desc_html
+
+        # Todo: Use a markdown converter to convert the md to html
+        self.desc_md = desc
+        self.desc_html = desc
 
     def __repr__(self):
         return '<Comment %r>' % self.desc_md
 
-    def new(title, user_id, idea_id, desc_md, desc_html):
+    def new(title, user_id, idea_id, desc):
         """
         Add a new comment to the database
         """
-        new_cmnt = Comment(user_id, idea_id, desc_md, desc_html)
+        new_cmnt = Comment(user_id, idea_id, desc)
         db.session.add(new_cmnt)
         db.session.commit()
         new_idea.__repr__()
@@ -50,7 +48,7 @@ class Comment(db.Model):
 
     def delete(self):
         """
-        Remove an idea from the database
+        Remove a comment from the database
         """
         db.session.delete(self)
         db.session.commit()
@@ -58,7 +56,7 @@ class Comment(db.Model):
 
     def update(self, **kwargs):
         """
-        Update an idea's data to new values.
+        Update a comments's data
         """
         for key, value in kwargs.items():
             setattr(self, key, value)
