@@ -29,6 +29,7 @@ from server.users.models import User
 from server.ideas.models import Idea
 from server.tags.models import Tag
 from server.tagging.models import Tagging
+from server.comments.models import Comments
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
