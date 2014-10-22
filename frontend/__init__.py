@@ -8,6 +8,10 @@ def create_app():
     app.config.from_object('config')
     app.config.from_pyfile('secrets', silent=True)
 
+    # A uuid url converter for flask
+    from misc.flask_uuid import FlaskUUID
+    FlaskUUID(app)
+
     from misc import db
     db.init_app(app)
 
