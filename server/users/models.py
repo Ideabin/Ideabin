@@ -1,15 +1,15 @@
-# Import the database object (db) from the main application module
 from misc import db
 
-# SQLAlchemy Exceptions
 from sqlalchemy import exc as SQLexc
 
-# UUID type for SQLAlchemy
 from misc.uuid import UUID
 import uuid
 
-# Required for timestamps
 import datetime as dt
+
+from hashlib import md5
+
+from flask import url_for
 
 from flask_login import UserMixin
 
@@ -80,6 +80,21 @@ class User(db.Model, UserMixin):
         return self
 
     @property
+    def avatar(self):
+        """
+        Return the url for user's gravatar image
+        """
+        return 'https://www.gravatar.com/avatar/%s?d=mm&s=%d' \
+        % (md5(self.email.encode('utf-8')).hexdigest(), 128)
+
+    @property
+    def url(self):
+        """
+        Get the url for current user
+        """
+        return url_for('users.id', uid=self.user_id, _external=True)
+
+    @property
     def json(self):
         """
         Return the user's data in json form
@@ -87,6 +102,8 @@ class User(db.Model, UserMixin):
         json = dict(
             user_id=str(self.user_id),
             username=self.username,
+            avatar=self.avatar,
+            url=self.url,
             first_name=self.first_name,
             last_name=self.last_name,
             created_on=self.created_on.strftime('%a, %d %b %Y %H:%M:%S'),
