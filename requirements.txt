@@ -10,6 +10,7 @@ Werkzeug==0.9.4
 alembic==0.6.5
 aniso8601==0.83
 itsdangerous==0.24
+markdown2==2.3.0
 --allow-external mysql-connector-python
 mysql-connector-python==1.2.2
 pep8==1.5.7

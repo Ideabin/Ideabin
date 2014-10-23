@@ -9,6 +9,8 @@ import uuid
 
 import datetime as dt
 
+import markdown2
+
 from server.users.models import User
 from server.tags.models import Tag
 from server.tagging.models import Tagging
@@ -38,9 +40,8 @@ class Idea(db.Model):
         self.title = title
         self.user_id = user_id
 
-        # Todo: Use a markdown converter to convert the md to html
         self.desc_md = desc
-        self.desc_html = desc
+        self.desc_html = str(markdown2.markdown(desc))
 
     def __repr__(self):
         return '<Idea %r>' % self.title
