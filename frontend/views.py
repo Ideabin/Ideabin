@@ -1,7 +1,12 @@
 from flask import (
+    Blueprint,
+    redirect,
     render_template,
-    Blueprint
+    url_for
 )
+
+from flask_login import current_user
+
 
 from server.exceptions import *
 
@@ -13,6 +18,8 @@ frontend_bp = Blueprint('frontend', __name__)
 
 @frontend_bp.route('/', endpoint='index')
 def homepage():
+    if not current_user.is_anonymous():
+        return redirect(url_for('frontend.explore'))
     return render_template('index.html')
 
 
