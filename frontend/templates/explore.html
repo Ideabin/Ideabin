@@ -7,12 +7,12 @@
         <a href="/i/{{ idea.idea_id }}">{{ idea.title }}</a>
 
         <div class="info">
-          <div class="pull-left"><p>by <a href="/u/{{ idea.user.user_id }}">{{ idea.user.username }}</a></p></div>
+          <div class="pull-left"><p>by <a href="/u/{{ idea.user.username }}">{{ idea.user.username }}</a></p></div>
           <div class="pull-right"><p>{{ idea.created_on.strftime('%a, %d %b') }}</p></div>
         </div>
 
         <div class="content">
-          <p>{{ idea.desc_md | truncate(100) }}</p>
+          <p>{{ idea.desc_md | truncate(250) }}</p>
         </div>
       </div>
       {% endfor %}
