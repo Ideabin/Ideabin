@@ -5,8 +5,10 @@ from flask import (
     url_for
 )
 
-from flask_login import current_user
-
+from flask_login import (
+    current_user,
+    login_required
+)
 
 from server.exceptions import *
 
@@ -31,6 +33,12 @@ def add_idea():
 @frontend_bp.route('/register/', endpoint='register')
 def register():
     return render_template('register.html')
+
+
+@frontend_bp.route('/profile/', endpoint='profile')
+@login_required
+def profile():
+    return render_template('profile.html', user=current_user)
 
 
 @frontend_bp.route('/explore/', endpoint='explore')
