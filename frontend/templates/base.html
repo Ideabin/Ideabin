@@ -21,31 +21,37 @@
         </button>
         <a class="navbar-brand" href="/">IdeaBin</a>
       </div>
-      <div class="navbar-collapse collapse">
 
+      <div class="navbar-collapse collapse">
         <form class="navbar-form navbar-left form-inline" id="search" role="search">
           <div class="form-group">
             <input type="text" class="form-control" style="width: 350px" placeholder="Search">
           </div>
         </form>
 
-        {% if request.path != "/login/"%}
-        <form class="navbar-form navbar-right" role="form">
-          <div class="form-group">
-            {% if not current_user or current_user.is_anonymous() %}
-              <a href="/login/" class="btn btn-default">Sign in</a>
-            {% else %}
-              <a href="/logout/" class="btn btn-default">Sign out</a>
-            {% endif %}
-          </div>
-        </form>
-        {% endif %}
-
         <ul class="nav navbar-nav">
-          <li>
-            <a href="/explore/">Explore</a>
-          </li>
+          <li> <a href="{{ url_for('frontend.explore') }}">Explore</a> </li>
+          <li> <a href="{{ url_for('frontend.add') }}">Post an Idea</a> </li>
         </ul>
+
+        {% if request.path != "/login/"%}
+        <ul class="nav navbar-nav navbar-right">
+          {% if not current_user or current_user.is_anonymous() %}
+          <form class="navbar-form">
+            <a href="{{ url_for('login.index') }}" class="btn btn-default">Sign in</a>
+          </form>
+          {% else %}
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#"> {{ current_user.username }} <span class="caret"></span> </a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="{{ url_for('frontend.profile') }}">Profile</a></li>
+                <li class="divider"></li>
+                <li><a href="{{ url_for('logout.index') }}">Sign out</a></li>
+              </ul>
+            </li>
+          {% endif %}
+        </ul>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -68,7 +74,7 @@
   <div class="footer">
     <div class="container">
       <ul class="list-inline">
-        <li><a href="/">Contact Us</a></li>
+        <li><a href="/">About Us</a></li>
       </ul>
     </div>
   </div>
