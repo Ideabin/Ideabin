@@ -13,7 +13,8 @@ from flask_login import (
 from server.exceptions import *
 
 from server.ideas.models import Idea
-from server.ideas.models import User
+from server.users.models import User
+from server.comments.models import Comment
 
 frontend_bp = Blueprint('frontend', __name__)
 
@@ -43,7 +44,7 @@ def profile():
 
 @frontend_bp.route('/explore/', endpoint='explore')
 def explore():
-    ideas = Idea.query.limit(50)
+    ideas = Idea.query.order_by(Idea.created_on.desc()).limit(50)
     return render_template('explore.html', ideas=ideas)
 
 
@@ -58,4 +59,6 @@ def show_user(username):
 @frontend_bp.route('/i/<uuid:idea_id>', endpoint='idea')
 def show_idea(idea_id):
     idea = Idea.query.get_or_404(idea_id)
-    return render_template('idea.html', idea=idea)
+    comments = Comment.query.filter_by(idea_id=idea_id) \
+        .order_by(Comment.created_on.asc())
+    return render_template('idea.html', idea=idea, comments=comments)

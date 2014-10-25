@@ -44,19 +44,54 @@
 
 <div class="container">
   <div class="col-md-8">
-    <div class="row comment">
-      <p class="text-muted"><a href="#">Prerit Garg</a> on 2 Aug 2013 </p>
-      <p> Awesome Idea!! </p>
-      <hr>
-    </div>
+    {% for comment in comments %}
+      <div class="row comment">
+        <p class="text-muted"><a href="/u/{{ comment.user.username }}">{{ comment.user.username }}</a> on {{ comment.created_on.strftime('%a, %d %b') }} </p>
+        <div class="content">{{ comment.desc_html | safe }}</div>
+        <hr>
+      </div>
+    {% endfor %}
+    {% if current_user.is_authenticated() %}
+      {% block script %}
+        {{ super() }}
+        <script>
+          $(document).ready(function()
+          {
+            $('#commentForm').submit(function(e)
+            {
+              $.ajax({
+                type: "POST",
+                url: "/api/1/ideas/{{ idea.idea_id }}/comments/",
+                data: JSON.stringify($("#commentForm").serializeObject()),
+                contentType: "application/json",
+                success: function(data, tStatus)
+                {
+                  // Todo: Append the comment to DOM rather than reloading the page.
+                  location.reload(false);
+                },
+                error:function(jqXHR, tStatus, errorThrown)
+                {
+                  data = JSON.parse(jqXHR.responseText);
+                  console.log(data);
+                }
+              });
+
+              return e.preventDefault();
+            });
+          });
+        </script>
+      {% endblock %}
+    <form id="commentForm" role="form" method="post">
     <div class="row">
       <div class="col-md-10 pull-left">
-        <textarea rows="2" class="form-control" placeholder="Post a comment"></textarea>
+        <textarea name="desc" rows="2" class="form-control" placeholder="Post a comment"></textarea>
       </div>
       <div class="col-md-2 pull-right">
         <button class="btn btn-success form-control"> Submit </button>
       </div>
     </div>
+    </form>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
