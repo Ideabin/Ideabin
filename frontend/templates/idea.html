@@ -5,7 +5,7 @@
     <div class="row">
       <h1>{{ idea.title }}</h1>
       <p class="text-muted" style="margin: 25px 0;">
-        by <a href="#">{{ idea.user.username }}</a>
+        by <a href="/u/{{ idea.user.username }}">{{ idea.user.username }}</a>
         on {{ idea.created_on.strftime('%a, %d %b') }}
       </p>
       <p>{{ idea.desc_html | safe}}</p>
@@ -14,23 +14,31 @@
   </div>
 
   <div class="col-md-3 col-md-offset-1" style="margin-top: 50px;">
-    <div class="row">
-      <!-- Todo: Unvote button. Github like toggle state? -->
-      <button id="vote" class="btn btn-default pull-left"> <i class="fa fa-thumbs-o-up"></i>   Upvote | {{ idea.vote_count }}</button>
-      <button id="subscribe" class="btn btn-success pull-right"> <i class="fa fa-flag"></i>    Subscribe</button>
-    </div>
-      <hr>
+    {% if current_user.is_authenticated() %}
+      {% if current_user.username != idea.user.username %}
+      <div class="row">
+        <!-- Todo: Unvote button. Github like toggle state? -->
+        <button id="vote" class="btn btn-default pull-left"> <i class="fa fa-thumbs-o-up"></i>   Upvote | {{ idea.vote_count }}</button>
+        <button id="subscribe" class="btn btn-success pull-right"> <i class="fa fa-flag"></i>    Subscribe</button>
+      </div>
+        <hr>
+      {% endif %}
+    {% endif %}
 
     <div class="row">
       <textarea id="tags" class="form-control" rows="4" placeholder="Tags" disabled="true"></textarea>
     </div>
       <hr>
 
-    <div class="row">
-      <button id="edit" class="btn btn-default pull-left" href="/edit/"> <i class="fa fa-pencil-square-o fa"></i>   Edit</button>
-      <button id="delete" class="btn btn-danger pull-right"> <i class="fa fa-times fa"></i>    Delete</button>
-    </div>
-      <hr>
+    {% if current_user.is_authenticated() %}
+      {% if current_user.username == idea.user.username %}
+        <div class="row">
+          <button id="edit" class="btn btn-default pull-left" href="/edit/"> <i class="fa fa-pencil-square-o fa"></i>   Edit</button>
+          <button id="delete" class="btn btn-danger pull-right"> <i class="fa fa-times fa"></i>    Delete</button>
+        </div>
+          <hr>
+      {% endif %}
+    {% endif %}
   </div>
 </div>
 
