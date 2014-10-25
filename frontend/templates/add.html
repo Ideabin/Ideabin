@@ -1,24 +1,7 @@
 {% extends 'base.html' %}
 {% block script %}
+  {{ super() }}
   <script type="text/javascript">
-    // http://stackoverflow.com/a/1186309/2043048
-    $.fn.serializeObject = function()
-    {
-        var o = {};
-        var a = this.serializeArray();
-        $.each(a, function() {
-            if (o[this.name] !== undefined) {
-                if (!o[this.name].push) {
-                    o[this.name] = [o[this.name]];
-                }
-                o[this.name].push(this.value || '');
-            } else {
-                o[this.name] = this.value || '';
-            }
-        });
-        return o;
-    };
-
     $(document).ready(function()
     {
       $('#form').submit(function(e)
@@ -31,7 +14,7 @@
           success: function(data, tStatus)
           {
             console.log(data);
-            document.location.href=data.url;
+            document.location.href=data.url.replace('api/1/ideas', 'i');
           },
           error:function(jqXHR, tStatus, errorThrown)
           {
