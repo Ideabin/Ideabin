@@ -7,9 +7,13 @@ import uuid
 
 import datetime as dt
 
+import markdown2
 
-class Comments(db.Model):
-    __tablename__ = 'comments'
+from server.users.models import User
+
+
+class Comment(db.Model):
+    __tablename__ = 'comment'
 
     comment_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(
@@ -29,22 +33,21 @@ class Comments(db.Model):
         self.user_id = user_id
         self.idea_id = idea_id
 
-        # Todo: Use a markdown converter to convert the md to html
         self.desc_md = desc
-        self.desc_html = desc
+        self.desc_html = str(markdown2.markdown(desc))
 
     def __repr__(self):
         return '<Comment %r>' % self.desc_md
 
-    def new(title, user_id, idea_id, desc):
+    def new(user_id, idea_id, desc):
         """
         Add a new comment to the database
         """
         new_cmnt = Comment(user_id, idea_id, desc)
         db.session.add(new_cmnt)
         db.session.commit()
-        new_idea.__repr__()
-        return new_idea
+        new_cmnt.__repr__()
+        return new_cmnt
 
     def delete(self):
         """
@@ -64,12 +67,28 @@ class Comments(db.Model):
         return self
 
     @property
+    def user(self):
+        """
+        Get basic info of the user who created comment
+        """
+        user = User.query.filter_by(user_id=self.user_id).first()
+        json = dict(
+            user_id=str(user.user_id),
+            username=user.username,
+            created_on=user.created_on.strftime('%a, %d %b %Y %H:%M:%S')
+        )
+        return json
+
+    @property
     def json(self):
         """
         Return the comment's data in json form
         """
-        json = {}
-        for prop, val in vars(self).items():
-            if not prop.startswith('_'):
-                json.update({prop: str(val)})
+        json = dict(
+            comment_id=str(self.comment_id),
+            desc_md=self.desc_md,
+            desc_html=self.desc_html,
+            created_on=self.created_on.strftime('%a, %d %b %Y %H:%M:%S'),
+            user=self.user
+        )
         return json
