@@ -98,10 +98,11 @@ class Idea(db.Model):
 
     @property
     def url(self):
-        """
-        Get the url for current idea
-        """
-        return url_for('ideas.id', uid=self.idea_id, _external=True)
+        return url_for('ideas.id', idea_id=self.idea_id, _external=True)
+
+    @property
+    def comments_url(self):
+        return url_for('comments.list', idea_id=self.idea_id, _external=True)
 
     @property
     def user(self):
@@ -137,7 +138,6 @@ class Idea(db.Model):
         """
         json = dict(
             idea_id=str(self.idea_id),
-            user_id=str(self.user_id),
             title=self.title,
             desc_md=self.desc_md,
             desc_html=self.desc_html,
@@ -146,6 +146,7 @@ class Idea(db.Model):
             created_on=self.created_on.strftime('%a, %d %b %Y %H:%M:%S'),
             tags=self.tags,
             url=self.url,
+            comments_url=self.comments_url,
             user=self.user
         )
         return json

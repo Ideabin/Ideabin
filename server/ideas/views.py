@@ -42,13 +42,13 @@ def get_ideas():
     return resp
 
 
-@ideas_bp.route('/<uuid:uid>', endpoint='id', methods=['GET'])
-def get_idea(uid):
+@ideas_bp.route('/<uuid:idea_id>', endpoint='id', methods=['GET'])
+def get_idea(idea_id):
     """
     Get a specific idea with the matching idea_id
     """
 
-    spark = Idea.query.filter_by(idea_id=uid).first()
+    spark = Idea.query.filter_by(idea_id=idea_id).first()
     if not spark:
         raise NotFound
 

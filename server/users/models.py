@@ -85,7 +85,7 @@ class User(db.Model, UserMixin):
         Return the url for user's gravatar image
         """
         return 'https://www.gravatar.com/avatar/%s?d=mm&s=%d' \
-        % (md5(self.email.encode('utf-8')).hexdigest(), 128)
+            % (md5(self.email.encode('utf-8')).hexdigest(), 128)
 
     @property
     def url(self):
