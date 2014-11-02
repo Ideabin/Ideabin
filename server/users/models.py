@@ -24,10 +24,10 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(120), default='')
     last_name = db.Column(db.String(120), default='')
 
-    # Note: This data is entirely optional
-    blog_url = db.Column(db.String(120), default='')
-    profile_fb = db.Column(db.String(120), default='')
-    profile_twitter = db.Column(db.String(120), default='')
+    blog_url = db.Column(db.String(512), default='')
+    facebook_url = db.Column(db.String(512), default='')
+    github_url = db.Column(db.String(512), default='')
+    twitter_url = db.Column(db.String(512), default='')
 
     # Possible values: 'Noob', 'Admin', 'Blocked'
     role = db.Column(db.String(32), default='Noob')
@@ -111,8 +111,10 @@ class User(db.Model, UserMixin):
             last_name=self.last_name,
             created_on=self.created_on.strftime('%a, %d %b %Y %H:%M:%S'),
             blog_url=self.blog_url,
-            profile_fb=self.profile_fb,
-            profile_twitter=self.profile_twitter
+            facebook_url=self.facebook_url,
+            twitter_url=self.twitter_url,
+            github_url=self.github_url,
+            role=self.role
         )
         return json
 

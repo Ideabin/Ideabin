@@ -48,15 +48,22 @@
 
       <div class="form-group">
         <div class="input-group margin-bottom-sm">
+          <span class="input-group-addon"><i class="fa fa-github fa-fw"></i></span>
+          <input value="{{ user.github_url }}" class="form-control" type="text" placeholder="Github">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="input-group margin-bottom-sm">
           <span class="input-group-addon"><i class="fa fa-facebook fa-fw"></i></span>
-          <input value="{{ user.profile_fb }}" class="form-control" type="text" placeholder="Facebook">
+          <input value="{{ user.facebook_url }}" class="form-control" type="text" placeholder="Facebook">
         </div>
       </div>
 
       <div class="form-group">
         <div class="input-group margin-bottom-sm">
           <span class="input-group-addon"><i class="fa fa-twitter fa-fw"></i></span>
-          <input value="{{ user.profile_twitter }}" class="form-control" type="text" placeholder="Twitter">
+          <input value="{{ user.twitter_url }}" class="form-control" type="text" placeholder="Twitter">
         </div>
       </div>
 
