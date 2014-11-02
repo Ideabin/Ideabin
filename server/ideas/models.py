@@ -12,6 +12,7 @@ import datetime as dt
 import markdown2
 
 from server.users.models import User
+from server.votes.models import Vote
 from server.tags.models import Tag
 from server.tagging.models import Tagging
 
@@ -29,7 +30,6 @@ class Idea(db.Model):
     desc_html = db.Column(db.Text, nullable=False)
 
     status = db.Column(db.String(20), default='')
-    vote_count = db.Column(db.Integer, default=0)
 
     # Note: The UTC timestamps will be converted to correct timezones
     # by the client
@@ -80,25 +80,13 @@ class Idea(db.Model):
         db.session.commit()
         return self
 
-    def voting(self):
-        """
-        Increases the vote count.
-        """
-        self.vote_count += 1
-        db.session.commit()
-        return self
-
-    def unvoting(self):
-        """
-        Decreases the vote count.
-        """
-        self.vote_count -= 1
-        db.session.commit()
-        return self
-
     @property
     def url(self):
         return url_for('ideas.id', idea_id=self.idea_id, _external=True)
+
+    @property
+    def vote_count(self):
+        return Vote.query.filter_by(idea_id=self.idea_id).count()
 
     @property
     def comments_url(self):
