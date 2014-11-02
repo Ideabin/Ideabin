@@ -30,6 +30,7 @@ from server.ideas.models import Idea
 from server.tags.models import Tag
 from server.tagging.models import Tagging
 from server.comments.models import Comment
+from server.votes.models import Vote
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
