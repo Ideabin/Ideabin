@@ -29,6 +29,9 @@ class User(db.Model, UserMixin):
     profile_fb = db.Column(db.String(120), default='')
     profile_twitter = db.Column(db.String(120), default='')
 
+    # Possible values: 'Noob', 'Admin', 'Blocked'
+    role = db.Column(db.String(32), default='Noob')
+
     # Note: The UTC timestamps will be converted to correct timezones
     # by the client
     created_on = db.Column(db.DateTime, default=dt.datetime.utcnow())
@@ -115,3 +118,6 @@ class User(db.Model, UserMixin):
 
     def get_id(self):
         return str(self.user_id)
+
+    def is_admin(self):
+        return self.role == 'Admin'
