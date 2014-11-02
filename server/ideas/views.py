@@ -14,6 +14,7 @@ from flask_login import (
 )
 
 from misc import db
+from misc.sql import idea_to_json
 from server.exceptions import *
 
 from misc.parser import Parser
@@ -36,7 +37,9 @@ def get_ideas():
     """
     Sends a list of ideas present in the database
     """
-    all_ideas = Idea.query.all()
+    # Todo: Add paging to retrieve next 50 ideas and so on
+    all_ideas = db.engine.execute("SELECT * FROM idea LIMIT 50")
+    all_ideas = Idea.query.limit(50)
     ideas = []
     if all_ideas:
         # Todo: Add paging to retrieve next 50 ideas and so on
