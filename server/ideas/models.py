@@ -71,12 +71,20 @@ class Idea(db.Model):
         db.session.commit()
         return self
 
-    def update(self, **kwargs):
-        """
-        Update an idea's data to new values.
-        """
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+    def update(self, title=None, desc=None, status=None, tags=None):
+        if title is not None:
+            self.title = title
+        if desc is not None:
+            self.desc_md = desc
+            self.desc_html = str(markdown2.markdown(desc))
+        if status is not None:
+            self.status = status
+
+        # Todo: Create taggings with tagnames passed
+        # The tags themselves should be created if they don't exist
+        if tags:
+            pass
+
         db.session.commit()
         return self
 
