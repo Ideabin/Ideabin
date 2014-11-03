@@ -135,4 +135,47 @@ def toggle_subscription(user_id):
 
     return make_response(jsonify({"message": msg}), 200)
 
-# Todo: Update user data
+
+@users_bp.route('/<uuid:user_id>', endpoint='edit', methods=['PUT'])
+@login_required
+def edit_idea(user_id):
+    """
+    Update the fields of an idea.
+    """
+    if not request.json:
+        raise InvalidRequest
+
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        raise NotFound
+
+    this_user_id = current_user.user_id
+    if this_user_id != user_id:
+        raise Unauthorized('You can only edit your own profile.')
+
+    username = Parser.string('username', optional=True)
+    email = Parser.email('email', optional=True)
+    password = Parser.anything('password', optional=True)
+
+    first_name = Parser.string('first_name', optional=True)
+    last_name = Parser.string('last_name', optional=True)
+
+    blog_url = Parser.uri('blog_url', optional=True)
+    facebook_url = Parser.uri('facebook_url', optional=True)
+    twitter_url = Parser.uri('twitter_url', optional=True)
+    github_url = Parser.uri('github_url', optional=True)
+
+    user = User.update(
+        user,
+        username,
+        # password,
+        email,
+        first_name,
+        last_name,
+        blog_url,
+        facebook_url,
+        twitter_url,
+        github_url
+    )
+
+    return make_response(jsonify(user.json), 201)
