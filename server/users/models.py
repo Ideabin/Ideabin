@@ -82,6 +82,39 @@ class User(db.Model, UserMixin):
         db.session.commit()
         return self
 
+    def update(
+        self,
+        username=None,
+        password=None,
+        email=None,
+        first_name=None,
+        last_name=None,
+        blog_url=None,
+        facebook_url=None,
+        twitter_url=None,
+        github_url=None
+    ):
+        if username is not None:
+            self.username = username
+        if password is not None:
+            self.password = password
+        if email is not None:
+            self.email = email
+        if first_name is not None:
+            self.first_name = first_name
+        if last_name is not None:
+            self.last_name = last_name
+        if status is not None:
+            self.status = status
+
+        self.blog_url = blog_url
+        self.facebook_url = facebook_url
+        self.twitter_url = twitter_url
+        self.github_url = github_url
+
+        db.session.commit()
+        return self
+
     @property
     def avatar(self):
         """

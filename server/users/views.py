@@ -84,7 +84,7 @@ def create_user():
         or_(
             User.username == username,
             User.email == email)
-        ).first()
+    ).first()
 
     if u:
         raise Conflict('The user already exists.')
@@ -111,4 +111,47 @@ def delete_user(uid):
 
     return make_response(jsonify(u.json), 200)
 
-# Todo: Update user data
+
+@users_bp.route('/<uuid:uid>', endpoint='edit', methods=['PUT'])
+@login_required
+def edit_idea(uid):
+    """
+    Update the fields of an idea.
+    """
+    if not request.json:
+        raise InvalidRequest
+
+    user = User.query.filter_by(user_id=uid).first()
+    if not user:
+        raise NotFound
+
+    user_id = current_user.user_id
+    if idea.user_id != user_id:
+        raise Conflict('You are not an authorised to edit another \
+                       user\'s details.')
+
+    username = Parser.string('username')
+    email = Parser.email('email')
+    password = Parser.anything('password')
+    first_name = Parser.string('first_name')
+    last_name = Parser.string('last_name')
+
+    blog_url = Parser.uri('blog_url')
+    facebook_url = Parser.uri('facebook_url')
+    twitter_url = Parser.uri('twitter_url')
+    github_url = Parser.uri('github_url')
+
+    user = User.update(
+        user,
+        username,
+        password,
+        email,
+        first_name,
+        last_name,
+        blog_url,
+        facebook_url,
+        twitter_url,
+        github_url
+    )
+
+    return make_response(jsonify(user.json), 201)
