@@ -57,6 +57,24 @@
         <script>
           $(document).ready(function()
           {
+            $('#vote').click(function(e)
+            {
+              $.ajax({
+                type: "POST",
+                url: "/api/1/ideas/{{ idea.idea_id }}/vote/",
+                success: function(data, tStatus)
+                {
+                  $('#vote').text('Upvote | ' + data.vote_count)
+                },
+                error:function(jqXHR, tStatus, errorThrown)
+                {
+                  data = JSON.parse(jqXHR.responseText);
+                  console.log(data);
+                }
+              });
+            return e.preventDefault();
+            });
+
             $('#commentForm').submit(function(e)
             {
               $.ajax({

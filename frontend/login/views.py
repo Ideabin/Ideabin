@@ -23,12 +23,11 @@ from server.users.models import User
 
 @login_bp.route('/', endpoint='index', methods=['GET', 'POST'])
 def login_handler():
-
-    if not current_user.is_anonymous():
-        return redirect(url_for('frontend.explore'))
-
     if request.method == 'GET':
-        return render_template('login.html')
+        if current_user.is_authenticated():
+            return redirect(url_for('frontend.explore'))
+        else:
+            return render_template('login.html')
 
     username = request.form['username']
     password = request.form['password']
