@@ -57,7 +57,14 @@ class Idea(db.Model):
         # Todo: Create taggings with tagnames passed
         # The tags themselves should be created if they don't exist
         if tags:
-            pass
+            t = tags.split(',')
+            for tag in t:
+                tdata = Tag.query.filter_by(tagname=tag)
+                if tdata:
+                    Tagging.new(tdata.tag_id, new_idea.idea_id)
+                else:
+                    newtag = Tag.new(tag, '')
+                    Tagging.new(newtag.tag_id, new_idea.idea_id)
 
         db.session.add(new_idea)
         db.session.commit()
