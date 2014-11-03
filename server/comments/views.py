@@ -15,6 +15,8 @@ from flask_login import (
     login_required
 )
 
+from sqlalchemy.sql import text
+
 from misc.parser import Parser
 
 from .models import Comment
@@ -37,7 +39,9 @@ def get_comments(idea_id):
     """
 
     # Todo: Add paging to retrieve next 50 comments and so on
-    comments = Comment.query.filter_by(idea_id=idea_id).limit(50)
+    comments = Comment.query.from_statement(
+        text("SELECT * FROM comment LIMIT 50")).all()
+    # comments = Comment.query.filter_by(idea_id=idea_id).limit(50)
 
     resp = make_response(json.dumps([c.json for c in comments]), 200)
     resp.mimetype = 'application/json'
@@ -51,8 +55,11 @@ def get_comment(idea_id, comment_id):
     Get a specific comment with matching comment_id
     """
 
-    comment = Comment.query.filter_by(
-        comment_id=comment_id, idea_id=idea_id).first()
+    comment = Comment.query.from_statement(
+        text("SELECT * from comment WHERE comment_id=:comment_id AND idea_id=:idea_id")).\
+        params(comment_id=comment_id, idea_id=idea_id).all()
+    # comment = Comment.query.filter_by(
+    #     comment_id=comment_id, idea_id=idea_id).first()
     if not comment:
         raise NotFound
 
@@ -98,8 +105,12 @@ def delete_comment(idea_id, comment_id):
     """
 
     user_id = current_user.user_id
-    comment = Comment.query.filter_by(
-        comment_id=comment_id, user_id=user_id, idea_id=idea_id).first()
+    comment = Comment.query.from_statement(
+        text("SELECT * from comment WHERE comment_id=:comment_id "
+             "AND idea_id=:idea_id AND user_id=user_id")).\
+        params(comment_id=comment_id, idea_id=idea_id, user_id=user_id).all()
+    # comment = Comment.query.filter_by(
+    #     comment_id=comment_id, user_id=user_id, idea_id=idea_id).first()
     if not comment:
         raise NotFound
     else:
