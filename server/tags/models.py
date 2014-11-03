@@ -50,12 +50,13 @@ class Tag(db.Model):
         db.session.commit()
         return self
 
-    def update(self, **kwargs):
-        """
-        Update a tag's data to new values.
-        """
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+    # Todo: Renaming to a new (or existing?) one
+    def update(self, tagname=None, desc=None):
+        if tagname is not None:
+            self.tagname = tagname
+        if desc is not None:
+            self.desc = desc
+
         db.session.commit()
         return self
 
@@ -68,8 +69,6 @@ class Tag(db.Model):
         taggings = Tagging.query.filter_by(tag_id=self.tag_id).all()
 
         return [str(t.idea_id) for t in taggings]
-
-    # Todo: Renaming to a new (or existing?) one
 
     @property
     def json(self):

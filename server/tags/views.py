@@ -88,5 +88,33 @@ def delete_tag(tname):
     Tag.delete(tag)
     return make_response('', 204)
 
-# Todo: Edit the tag data
+
+# Todo:
+# 1. Edit the tag data
 # (rename to the previous tags must be taken care of)
+@tags_bp.route('/<uuid:tag_id>', endpoint='edit', methods=['PUT'])
+@login_required
+def edit_idea(tag_id):
+    """
+    Update the fields of an idea.
+    """
+    if not request.json:
+        raise InvalidRequest
+
+    if not user.isadmin():
+        raise Conflict('You are not an admin.')
+
+    tag = Tag.query.filter_by(tag_id=tag_id).first()
+    if not tag:
+        raise NotFound
+
+    # Todo: These should probably be a string with some max len
+    tagname = Parser.anything('tagname')
+    desc = Parser.anything('desc')
+
+    if Tag.query.filter_by(tagname=tagname).first():
+        raise Conflict('This tagname already exists. Try something else.')
+
+    tag = Tag.update(tag, tagname, desc)
+
+    return make_response(jsonify(tag.json), 201)
