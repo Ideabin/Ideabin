@@ -14,6 +14,7 @@ from flask_login import (
     login_required,
     current_user
 )
+from sqlalchemy.sql import text
 
 from misc.parser import Parser
 
@@ -29,7 +30,8 @@ def get_tags():
     Sends a list of tags present in the database
     """
     # Todo: (1) Add paging to retrieve next 50 tags and so on
-    tags = Tag.query.limit(50)
+    tags = Tag.query.from_statement(
+        text("SELECT * FROM tag LIMIT 50")).all()
     if not tags:
         raise NotFound
 
@@ -44,7 +46,10 @@ def get_tag(tag_id):
     Get a specific tag with the matching tag_id
     """
 
-    tag = Tag.query.filter_by(tag_id=tag_id).first()
+    # tag = Tag.query.filter_by(tag_id=tag_id).first()
+    tag = Tag.query.from_statement(
+        text("SELECT * FROM tag WHERE tag_id = :tag_id")).\
+        params(tag_id=tag_id).all()
     if not tag:
         raise NotFound
 
@@ -56,8 +61,10 @@ def get_tag(tname):
     """
     Get a specific tag with the matching tagname
     """
-
-    tag = Tag.query.filter_by(tagname=tname).first()
+    # tag = Tag.query.filter_by(tagname=tname).first()
+    tag = Tag.query.from_statement(
+        text("SELECT * FROM tag where tagname = :tname")).\
+        params(tname=tname).all()
     if not tag:
         raise NotFound
 
@@ -90,9 +97,13 @@ def delete_tag(tname):
         raise Unauthorized
 
     tag = Tag.query.filter_by(tagname=tname).first()
+    text("SELECT * FROM tag WHERE tagname = :tagname")) \
+    .params(tagname=tname)
     if not tag:
         raise NotFound
 
+    text("DELETE FROM tag WHERE tagname = :tn") \
+    .params(tn=tname)
     Tag.delete(tag)
     return make_response('', 204)
 
