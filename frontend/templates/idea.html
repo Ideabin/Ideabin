@@ -75,6 +75,24 @@
             return e.preventDefault();
             });
 
+            $('#edit').click(function(e)
+            {
+              $.ajax({
+                type: "PUT",
+                url: "/api/1/ideas/{{ idea.idea_id }}/",
+                success: function(data, tStatus)
+                {
+                  // todo: edit the idea
+                }
+                error: function(jqXHR, tStatus, errorThrown)
+                {
+                  data = JSON.parse(jqXHR.responseText);
+                  console.log(data);
+                }
+              });
+              return e.preventDefault();
+            });
+
             $('#commentForm').submit(function(e)
             {
               $.ajax({
@@ -93,9 +111,9 @@
                   console.log(data);
                 }
               });
-
               return e.preventDefault();
             });
+
           });
         </script>
       {% endblock %}
