@@ -10,9 +10,15 @@ from flask import (
     Blueprint
 )
 
+from flask_login import (
+    login_required,
+    current_user
+)
+
 from misc.parser import Parser
 
 from .models import Tag
+from server.subscriptions.models import TagSub
 
 tags_bp = Blueprint('tags', __name__)
 
@@ -32,13 +38,13 @@ def get_tags():
     return resp
 
 
-@tags_bp.route('/<uuid:tid>', endpoint='id', methods=['GET'])
-def get_tag(tid):
+@tags_bp.route('/<uuid:tag_id>', endpoint='id', methods=['GET'])
+def get_tag(tag_id):
     """
     Get a specific tag with the matching tag_id
     """
 
-    tag = Tag.query.filter_by(tag_id=tid).first()
+    tag = Tag.query.filter_by(tag_id=tag_id).first()
     if not tag:
         raise NotFound
 
@@ -87,6 +93,28 @@ def delete_tag(tname):
 
     Tag.delete(tag)
     return make_response('', 204)
+
+
+@tags_bp.route('/<uuid:tag_id>/subscribe/', endpoint='subscribe',
+               methods=['POST'])
+@login_required
+def toggle_subscription(tag_id):
+    """
+    Subscribes a tag
+    """
+
+    user_id = current_user.user_id
+    sub = TagSub.query.filter_by(sub_by=user_id, sub_to=tag_id).first()
+    if not sub:
+        TagSub.new(user_id, tag_id)
+        msg = "You are now subscribed."
+    else:
+        TagSub.delete(sub)
+        msg = "You are now unsubscribed."
+
+    return make_response(jsonify({"message": msg}), 200)
+
+# Todo: Update idea
 
 # Todo: Edit the tag data
 # (rename to the previous tags must be taken care of)

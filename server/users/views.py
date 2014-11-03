@@ -21,7 +21,7 @@ from misc.parser import Parser
 from server.exceptions import *
 
 from .models import User
-from server.subs.models import USub
+from server.subscriptions.models import UserSub
 
 users_bp = Blueprint('users', __name__)
 
@@ -85,7 +85,7 @@ def create_user():
         or_(
             User.username == username,
             User.email == email)
-        ).first()
+    ).first()
 
     if u:
         raise Conflict('The user already exists.')
@@ -113,22 +113,26 @@ def delete_user(uid):
     return make_response(jsonify(u.json), 200)
 
 
-# Todo: Requires authentication
-@users_bp.route('/<uuid:uid>/sub', endpoint='subscription', methods=['POST'])
-def sub_unsub_user(uid):
+@users_bp.route('/<uuid:user_id>/subscribe/', endpoint='subscribe',
+                methods=['POST'])
+@login_required
+def toggle_subscription(user_id):
     """
-    Subscribes on an user
+    Subscribes a user
     """
-    # user_id = get_current_user() # from oauth
 
-    if user_id == uid:
-        raise NotAllowed
-    sub = USub.query.filter_by(sub_to=uid, sub_by=user_id).first()
+    this_user_id = current_user.user_id
+    if this_user_id == user_id:
+        raise Conflict("You can't subscribe yourself.")
+
+    sub = UserSub.query.filter_by(sub_by=this_user_id, sub_to=user_id).first()
     if not sub:
-        USub.new(uid, user_id)
-        return "you are subscribed"
+        UserSub.new(this_user_id, user_id)
+        msg = "You are now subscribed."
     else:
-        USub.delete(sub)
-        return "you are un-subscribed"
+        UserSub.delete(sub)
+        msg = "You are now unsubscribed."
+
+    return make_response(jsonify({"message": msg}), 200)
 
 # Todo: Update user data
