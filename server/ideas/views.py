@@ -13,6 +13,8 @@ from flask_login import (
     current_user
 )
 
+from sqlalchemy.sql import text
+
 from misc import db
 from misc.sql import idea_to_json
 from server.exceptions import *
@@ -38,8 +40,8 @@ def get_ideas():
     Sends a list of ideas present in the database
     """
     # Todo: Add paging to retrieve next 50 ideas and so on
-    all_ideas = db.engine.execute("SELECT * FROM idea LIMIT 50")
-    all_ideas = Idea.query.limit(50)
+    all_ideas = Idea.query.from_statement(
+        text("SELECT * FROM idea LIMIT 50")).all()
     ideas = []
     if all_ideas:
         # Todo: Add paging to retrieve next 50 ideas and so on
@@ -59,7 +61,10 @@ def get_idea(idea_id):
     Get a specific idea with the matching idea_id
     """
 
-    idea = Idea.query.filter_by(idea_id=idea_id).first()
+    idea = Idea.query.from_statement(
+        text("SELECT * FROM idea where idea_id=:idea_id")).\
+        params(idea_id=str(idea_id)).all()
+    # idea = Idea.query.filter_by(idea_id=idea_id).first()
     if not idea:
         raise NotFound
 
@@ -83,6 +88,7 @@ def create_idea():
         new = Idea.new(title, desc, User.get_anon().user_id, tags)
     else:
         new = Idea.new(title, desc, current_user.user_id, tags)
+    # new = db.engine.execute("INSERT INTO idea VALUES ()")
 
         # user.subscribers contains strings
         for user_id in current_user.subscribers:
@@ -99,14 +105,21 @@ def delete_idea(idea_id):
     Delete the idea with matching idea_id.
     """
     if current_user.is_admin():
-        idea = Idea.query.filter_by(idea_id=idea_id).first()
+        # idea = Idea.query.filter_by(idea_id=idea_id).first()
+        idea = Idea.query.from_statement(
+            text("SELECT * FROM idea where idea_id=:idea_id")).\
+            params(idea_id=str(idea_id)).all()
     else:
-        idea = Idea.query.filter_by(
-            idea_id=idea_id, user_id=current_user.user_id).first()
+        # idea = Idea.query.filter_by(
+        #     idea_id=idea_id, user_id=current_user.user_id).first()
+        idea = Idea.query.from_statement(text(
+            "SELECT * FROM idea where idea_id=:idea_id AND user_id=:user_id")). \
+            params(idea_id=str(idea_id), user_id=current_user.user_id).all()
 
     if not idea:
         raise NotFound
 
+    # idea = db.engine.execute("DELETE FROM idea WHERE idea_id==:id", id=idea_id)
     Idea.delete(idea)
     return make_response('', 204)
 
@@ -150,7 +163,11 @@ def vote_idea(idea_id):
     Increase the vote count of the idea with matching idea_id.
     """
 
-    idea = Idea.query.filter_by(idea_id=idea_id).first()
+    idea = Idea.query.from_statement(
+        text("SELECT * FROM idea where idea_id=:idea_id")).\
+        params(idea_id=str(idea_id)).all()
+    # idea = Idea.query.filter_by(idea_id=idea_id).first()
+
     if not idea:
         raise NotFound
 
@@ -159,7 +176,11 @@ def vote_idea(idea_id):
     if idea.user_id == user_id:
         raise Conflict('You can not vote on your own ideas.')
 
-    voted = Vote.query.filter_by(user_id=user_id, idea_id=idea_id).first()
+    voted = Vote.query.from_statement(
+        text("SELECT * FROM vote where idea_id=:idea_id AND user_id==:user_id")).\
+        params(idea_id=str(idea_id), user_id=str(user_id)).all()
+    # voted = Vote.query.filter_by(user_id=user_id, idea_id=idea_id).first()
+
     if not voted:
         Vote.new(user_id, idea_id)
     else:
