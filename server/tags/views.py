@@ -114,7 +114,29 @@ def toggle_subscription(tag_id):
 
     return make_response(jsonify({"message": msg}), 200)
 
-# Todo: Update idea
+# Rename to the previous tags must be taken care of
+@tags_bp.route('/<uuid:tag_id>', endpoint='edit', methods=['PUT'])
+@login_required
+def edit_idea(tag_id):
+    """
+    Update the fields of an idea.
+    """
+    if not request.json:
+        raise InvalidRequest
 
-# Todo: Edit the tag data
-# (rename to the previous tags must be taken care of)
+    tag = Tag.query.filter_by(tag_id=tag_id).first()
+    if not tag:
+        raise NotFound
+
+    if not user.isadmin():
+        raise Unauthorized('Only administrators can edit a tag.')
+
+    name = Parser.string('name', min=2, max=50)
+    desc = Parser.string('desc', optional=True)
+
+    if Tag.query.filter_by(tagname=name).first():
+        raise Conflict('Tagname `%s` already exists.' % tagname)
+
+    tag = Tag.update(tag, tagname, desc)
+
+    return make_response(jsonify(tag.json), 201)

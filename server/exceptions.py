@@ -18,9 +18,9 @@ class InvalidRequest(BaseError):
 
 
 class Unauthorized(BaseError):
-    def __init__(self, msg=''):
+    def __init__(self, msg='You need to be logged in to access this URL.'):
         super(Unauthorized, self).__init__(
-            msg='You need to be logged in to access this URL.',
+            msg=msg,
             status=401
         )
 
@@ -42,7 +42,7 @@ class NotAllowed(BaseError):
 
 
 class Conflict(BaseError):
-    def __init__(self, msg='A conflict occurred while processing the data.'):
+    def __init__(self, msg='A conflict occurred while processing the request.'):
         super(Conflict, self).__init__(
             msg=msg,
             status=409
