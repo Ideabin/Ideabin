@@ -32,6 +32,8 @@ from server.tagging.models import Tagging
 from server.comments.models import Comment
 from server.votes.models import Vote
 
+from server.subscriptions.models import IdeaSub, UserSub, TagSub
+
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
