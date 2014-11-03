@@ -13,6 +13,7 @@ from flask_login import (
     login_required
 )
 
+from sqlalchemy.sql import text
 from sqlalchemy import or_
 
 from misc import db
@@ -40,7 +41,9 @@ def get_users():
     """
     Sends a list of users present in the database
     """
-    all_users = User.query.all()
+    # all_users = db.engine.execute("SELECT * FROM user")
+    all_users = User.query.from_statement(
+        text("SELECT * FROM user LIMIT 50")).all()
     users = []
     if all_users:
         # Todo: Add paging to retrieve next 50 users and so on
@@ -60,8 +63,10 @@ def get_user(uid):
     """
     Get a specific user with the matching user_id
     """
-
-    u = User.query.filter_by(user_id=uid).first()
+    u = User.query.from_statement(
+        text("SELECT * FROM user where user_id=:uid")).\
+        params(uid=str(uid)).all()
+    # u = User.query.filter_by(user_id=uid).first()
     if not u:
         raise NotFound
 
@@ -90,6 +95,7 @@ def create_user():
     if u:
         raise Conflict('The user already exists.')
 
+    new = db.engine.execute("INSERT INTO user ()")
     new = User.new(username, password, email)
     # Note: The API shouldn't be logging in user
     login_user(new)
@@ -102,12 +108,16 @@ def delete_user(uid):
     Delete the user with matching user_id
     """
 
-    u = User.query.filter_by(user_id=uid).first()
+    u = User.query.from_statement(
+        text("SELECT * FROM user WHERE user_id==:user_id")).\
+        params(user_id=uid).all()
+    # u = User.query.filter_by(user_id=uid).first()
     if not u:
         raise NotFound
 
     # todo: user verification to delete the user
 
+    # u = db.engine.execute("DELETE FROM user WHERE user_id==:id", id=uid)
     u = User.delete(u)
 
     return make_response(jsonify(u.json), 200)
