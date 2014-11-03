@@ -92,6 +92,33 @@ def delete_idea(idea_id):
     return make_response('', 204)
 
 
+@ideas_bp.route('/<uuid:idea_id>', endpoint='edit', methods=['PUT'])
+@login_required
+def edit_idea(idea_id):
+    """
+    Update the fields of an idea.
+    """
+    if not request.json:
+        raise InvalidRequest
+
+    idea = Idea.query.filter_by(idea_id=idea_id).first()
+    if not idea:
+        raise NotFound
+
+    user_id = current_user.user_id
+    if user_id != idea.user.user_id:
+        raise Unauthorized('You can only edit your own ideas.')
+
+    title = Parser.string('title', max=500)
+    desc = Parser.anything('desc')
+    status = Parser.string('status', max=20, optional=True)
+    tags = Parser.list('tags', optional=True)
+
+    idea = Idea.update(idea, title, desc, status, tags)
+
+    return make_response(jsonify(idea.json), 201)
+
+
 @ideas_bp.route('/<uuid:idea_id>/vote/', endpoint='vote', methods=['POST'])
 @login_required
 def vote_idea(idea_id):
