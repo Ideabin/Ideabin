@@ -13,6 +13,8 @@ from flask import url_for
 
 from flask_login import UserMixin
 
+from server.subscriptions.models import IdeaSub, UserSub, TagSub
+
 
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
@@ -83,6 +85,33 @@ class User(db.Model, UserMixin):
         return self
 
     @property
+    def subscriptions(self):
+        """
+        Everything subscribed by the user
+        """
+
+        ideas = IdeaSub.query.filter_by(sub_by=self.user_id).all()
+        users = UserSub.query.filter_by(sub_by=self.user_id).all()
+        tags = TagSub.query.filter_by(sub_by=self.user_id).all()
+
+        subs = {}
+        subs['ideas'] = [str(i.sub_to) for i in ideas]
+        subs['users'] = [str(i.sub_to) for i in users]
+        subs['tags'] = [str(i.sub_to) for i in tags]
+
+        return subs
+
+    @property
+    def subscribers(self):
+        """
+        Users who have subscribed
+        """
+
+        users = UserSub.query.filter_by(sub_to=self.user_id).all()
+
+        return [str(i.sub_by) for i in users]
+
+    @property
     def avatar(self):
         """
         Return the url for user's gravatar image
@@ -114,6 +143,8 @@ class User(db.Model, UserMixin):
             facebook_url=self.facebook_url,
             twitter_url=self.twitter_url,
             github_url=self.github_url,
+            subscriptions=self.subscriptions,
+            subscribers=self.subscribers,
             role=self.role
         )
         return json

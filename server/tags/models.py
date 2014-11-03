@@ -1,17 +1,16 @@
-# Import the database object (db) from the main application module
 from misc import db
 
-# SQLAlchemy Exceptions
+from flask import url_for
+
 from sqlalchemy import exc as SQLexc
 
-# UUID type for SQLAlchemy
 from misc.uuid import UUID
 import uuid
 
-# Required for timestamps
 import datetime as dt
 
 from server.tagging.models import Tagging
+from server.subscriptions.models import TagSub
 
 
 class Tag(db.Model):
@@ -60,6 +59,20 @@ class Tag(db.Model):
         return self
 
     @property
+    def subscribers(self):
+        """
+        Users who have subscribed
+        """
+
+        tags = TagSub.query.filter_by(sub_to=self.tag_id).all()
+
+        return [str(i.sub_by) for i in tags]
+
+    @property
+    def url(self):
+        return url_for('tags.id', tag_id=self.tag_id, _external=True)
+
+    @property
     def ideas(self):
         """
         Get all ideas of the tag
@@ -76,11 +89,13 @@ class Tag(db.Model):
         """
         Return the tag's data in json form
         """
-        json = {}
-
-        for prop, val in vars(self).items():
-            if not prop.startswith('_'):
-                json.update({prop: str(val)})
-
-        json.update({"ideas": self.ideas})
+        json = dict(
+            tag_id=str(self.tag_id),
+            tagname=self.tagname,
+            desc=self.desc,
+            created_on=self.created_on.strftime('%a, %d %b %Y %H:%M:%S'),
+            ideas=self.ideas,
+            subscribers=self.subscribers,
+            url=self.url
+        )
         return json

@@ -16,6 +16,8 @@ from server.votes.models import Vote
 from server.tags.models import Tag
 from server.tagging.models import Tagging
 
+from server.subscriptions.models import IdeaSub
+
 
 class Idea(db.Model):
     __tablename__ = 'idea'
@@ -81,6 +83,16 @@ class Idea(db.Model):
         return self
 
     @property
+    def subscribers(self):
+        """
+        Users who have subscribed
+        """
+
+        ideas = IdeaSub.query.filter_by(sub_to=self.idea_id).all()
+
+        return [str(i.sub_by) for i in ideas]
+
+    @property
     def url(self):
         return url_for('ideas.id', idea_id=self.idea_id, _external=True)
 
@@ -135,6 +147,7 @@ class Idea(db.Model):
             tags=self.tags,
             url=self.url,
             comments_url=self.comments_url,
+            subscribers=self.subscribers,
             user=self.user
         )
         return json
