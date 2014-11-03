@@ -18,7 +18,7 @@
       {% if current_user.username != idea.user.username %}
       <div class="row">
         <!-- Todo: Unvote button. Github like toggle state? -->
-        <button id="vote" class="btn btn-default pull-left"> <i class="fa fa-thumbs-o-up"></i>   Upvote | {{ idea.vote_count }}</button>
+        <button id="vote" class="btn btn-default pull-left"> <i class="fa fa-thumbs-o-up"></i>   Vote | {{ idea.vote_count }}</button>
         <button id="subscribe" class="btn btn-success pull-right"> <i class="fa fa-flag"></i>    Subscribe</button>
       </div>
         <hr>
@@ -64,7 +64,7 @@
                 url: "/api/1/ideas/{{ idea.idea_id }}/vote/",
                 success: function(data, tStatus)
                 {
-                  $('#vote').text('Upvote | ' + data.vote_count)
+                  $('#vote').text('Vote | ' + data.vote_count)
                 },
                 error:function(jqXHR, tStatus, errorThrown)
                 {
