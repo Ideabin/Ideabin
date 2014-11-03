@@ -103,10 +103,12 @@ def edit_idea(idea_id):
         raise InvalidRequest
 
     idea = Idea.query.filter_by(idea_id=idea_id).first()
+    if not idea:
+        raise NotFound
 
     user_id = current_user.user_id
-    if idea['user']['user_id'] != str(user_id):
-        raise Unauthorized
+    if idea.user_id != user_id:
+        raise Conflict('You are not an author of this idea.')
 
     # Todo: These should probably be a string with some max len
     title = Parser.anything('title')
