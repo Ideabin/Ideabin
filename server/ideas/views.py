@@ -65,6 +65,8 @@ def create_idea():
     if not request.json:
         raise InvalidRequest
 
+    idea = Idea.query.filter_by(idea_id=idea_id).first()
+
     # Todo: These should probably be a string with some max len
     title = Parser.anything('title')
     desc = Parser.anything('desc')
@@ -89,6 +91,32 @@ def delete_idea(iid):
 
     Idea.delete(idea)
     return make_response('', 204)
+
+
+@ideas_bp.route('/<uuid:idea_id>', endpoint='edit', methods=['PUT'])
+@login_required
+def edit_idea(idea_id):
+    """
+    Update the fields of an idea.
+    """
+    if not request.json:
+        raise InvalidRequest
+
+    idea = Idea.query.filter_by(idea_id=idea_id).first()
+
+    user_id = current_user.user_id
+    if idea['user']['user_id'] != str(user_id):
+        raise Unauthorized
+
+    # Todo: These should probably be a string with some max len
+    title = Parser.anything('title')
+    desc = Parser.anything('desc')
+    status = Parser.string('status', max=20, optional=True)
+    tags = Parser.list('tags', optional=True)
+
+    idea = Idea.update(idea, title, desc, status, tags)
+
+    return make_response(jsonify(idea.json), 201)
 
 
 @ideas_bp.route('/<uuid:idea_id>/vote/', endpoint='vote', methods=['POST'])
