@@ -1,14 +1,10 @@
-# Import the database object (db) from the main application module
 from misc import db
 
-# SQLAlchemy Exceptions
 from sqlalchemy import exc as SQLexc
 
-# UUID type for SQLAlchemy
 from misc.uuid import UUID
 import uuid
 
-# Required for timestamps
 import datetime as dt
 
 
@@ -35,9 +31,6 @@ class Vote(db.Model):
             db.session.add(new_user)
             db.session.commit()
         except SQLexc.IntegrityError as e:
-            # Todo: (i)Raise a proper exception
-            # that the view will catch
-            # raise(e)
             db.session.rollback()
         return True
 

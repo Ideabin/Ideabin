@@ -33,8 +33,8 @@ def get_ideas():
     ideas = []
     if all_ideas:
         # Todo: Add paging to retrieve next 50 ideas and so on
-        for spark in all_ideas[0:50]:
-            ideas.append(spark.json)
+        for idea in all_ideas[0:50]:
+            ideas.append(idea.json)
     else:
         raise NotFound
 
@@ -49,11 +49,11 @@ def get_idea(idea_id):
     Get a specific idea with the matching idea_id
     """
 
-    spark = Idea.query.filter_by(idea_id=idea_id).first()
-    if not spark:
+    idea = Idea.query.filter_by(idea_id=idea_id).first()
+    if not idea:
         raise NotFound
 
-    return make_response(jsonify(spark.json), 200)
+    return make_response(jsonify(idea.json), 200)
 
 
 @ideas_bp.route('/', endpoint='create', methods=['POST'])
@@ -83,34 +83,36 @@ def delete_idea(iid):
     """
     Delete the idea with matching idea_id.
     """
-    spark = Idea.query.filter_by(idea_id=iid).first()
-    if not spark:
+    idea = Idea.query.filter_by(idea_id=iid).first()
+    if not idea:
         raise NotFound
 
-    Idea.delete(spark)
+    Idea.delete(idea)
     return make_response('', 204)
 
 
-@ideas_bp.route('/<uuid:iid>/vote', endpoint='upvote', methods=['POST'])
+@ideas_bp.route('/<uuid:idea_id>/vote/', endpoint='vote', methods=['POST'])
 @login_required
-def vote_idea(iid):
+def vote_idea(idea_id):
     """
     Increase the vote count of the idea with matching idea_id.
     """
-    user_id = current_user.user_id
 
-    spark = Idea.query.filter_by(idea_id=iid).first()
-    if not spark:
+    idea = Idea.query.filter_by(idea_id=idea_id).first()
+    if not idea:
         raise NotFound
 
-    voted = Vote.query.filter_by(user_id=user_id, idea_id=iid)
+    user_id = current_user.user_id
+
+    if idea.user_id == user_id:
+        raise Conflict('You can not vote on your own ideas.')
+
+    voted = Vote.query.filter_by(user_id=user_id, idea_id=idea_id).first()
     if not voted:
-        i = Idea.voting(spark)
-        Vote.new(user_id, iid)
+        Vote.new(user_id, idea_id)
     else:
-        i = Idea.unvoting(spark)
         Vote.delete(voted)
 
-    return make_response(jsonify(i.json), 200)
+    return make_response(jsonify({"vote_count": idea.vote_count}), 200)
 
 # Todo: Update idea
