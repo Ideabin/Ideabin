@@ -25,10 +25,17 @@
       {% endif %}
     {% endif %}
 
+    {% if idea.tags %}
     <div class="row">
-      <textarea id="tags" class="form-control" rows="4" placeholder="Tags" disabled="true"></textarea>
+      <h4>Tags:</h4>
+      <p>
+      {% for tag in idea.tags %}
+      <a href="/api/1/tags/{{ tag }}"><strong> {{ tag }}</strong></a>,
+      {% endfor %}
+      </p>
     </div>
-      <hr>
+    {% endif %}
+    <hr>
 
     {% if current_user.is_authenticated() %}
       {% if current_user.username == idea.user.username %}
