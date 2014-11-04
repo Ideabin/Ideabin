@@ -21,9 +21,9 @@ frontend_bp = Blueprint('frontend', __name__)
 
 @frontend_bp.route('/', endpoint='index')
 def homepage():
-    if not current_user.is_anonymous():
-        return redirect(url_for('frontend.explore'))
-    return render_template('index.html')
+    # if not current_user.is_anonymous():
+    return redirect(url_for('frontend.explore'))
+    # return render_template('index.html')
 
 
 @frontend_bp.route('/add/', endpoint='add')
