@@ -75,6 +75,24 @@
             return e.preventDefault();
             });
 
+            $('#delete').click(function(e)
+            {
+              $.ajax({
+                type: "DELETE",
+                url: "/api/1/ideas/{{ idea.idea_id }}",
+                success: function(data, tStatus)
+                {
+                  window.location = "{{ url_for('frontend.explore') }}";
+                },
+                error:function(jqXHR, tStatus, errorThrown)
+                {
+                  data = JSON.parse(jqXHR.responseText);
+                  console.log(data);
+                }
+              });
+            return e.preventDefault();
+            });
+
             $('#commentForm').submit(function(e)
             {
               $.ajax({

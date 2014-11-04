@@ -77,14 +77,15 @@ def create_idea():
     return make_response(jsonify(new.json), 201)
 
 
-# Todo: Requires authentication
-@ideas_bp.route('/<uuid:iid>', endpoint='delete', methods=['DELETE'])
-# @login_required
-def delete_idea(iid):
+@ideas_bp.route('/<uuid:idea_id>', endpoint='delete', methods=['DELETE'])
+@login_required
+def delete_idea(idea_id):
     """
     Delete the idea with matching idea_id.
     """
-    idea = Idea.query.filter_by(idea_id=iid).first()
+
+    idea = Idea.query.filter_by(
+        idea_id=idea_id, user_id=current_user.user_id).first()
     if not idea:
         raise NotFound
 
