@@ -10,6 +10,7 @@
   <title>{% block title %}IdeaBin{% endblock %}</title>
 </head>
 <body>
+  <div class="wrapper">
   <div class="navbar navbar-default navbar-static-top" role="navigation">
     <div class="container">
       <div class="navbar-header">
@@ -70,6 +71,9 @@
   </div>
   {% endif %} {% endwith %}
   {% block content %} {% endblock %}
+    <div class="push"></div>
+  </div>
+
   {% block  footer %}
   <div class="footer">
     <div class="container">
