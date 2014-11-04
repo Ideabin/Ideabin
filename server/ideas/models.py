@@ -56,16 +56,7 @@ class Idea(db.Model):
         db.session.add(new_idea)
         db.session.commit()
         new_idea.__repr__()
-
-        if tags:
-            for tagname in tags:
-                tag = Tag.query.filter_by(tagname=tagname).first()
-                if tag:
-                    Tagging.new(tag.tag_id, new_idea.idea_id)
-                else:
-                    newtag = Tag.new(tagname, '')
-                    Tagging.new(newtag.tag_id, new_idea.idea_id)
-
+        new_idea.add_tags(tags)
         return new_idea
 
     def delete(self):
@@ -84,14 +75,19 @@ class Idea(db.Model):
             self.desc_html = str(markdown2.markdown(desc))
         if status is not None:
             self.status = status
-
-        # Todo: Create taggings with tagnames passed
-        # The tags themselves should be created if they don't exist
-        if tags:
-            pass
-
         db.session.commit()
+        self.add_tags(tags)
         return self
+
+    def add_tags(self, tags):
+        if tags:
+            for tagname in tags:
+                tag = Tag.query.filter_by(tagname=tagname.strip()).first()
+                if tag:
+                    Tagging.new(tag.tag_id, self.idea_id)
+                else:
+                    newtag = Tag.new(tagname, '')
+                    Tagging.new(newtag.tag_id, self.idea_id)
 
     @property
     def subscribers(self):
