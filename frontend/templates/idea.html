@@ -40,7 +40,8 @@
     {% if current_user.is_authenticated() %}
       {% if current_user.username == idea.user.username %}
         <div class="row">
-          <button id="edit" class="btn btn-default pull-left" href="/edit/"> <i class="fa fa-pencil-square-o fa"></i>   Edit</button>
+          <a id="edit" href="{{ url_for('frontend.edit_idea', idea_id=idea.idea_id) }}" class="btn btn-default pull-left">
+          <i class="fa fa-pencil-square-o fa"></i>   Edit</a>
           <button id="delete" class="btn btn-danger pull-right"> <i class="fa fa-times fa"></i>    Delete</button>
         </div>
           <hr>

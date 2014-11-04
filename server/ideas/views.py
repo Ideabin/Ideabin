@@ -106,7 +106,7 @@ def edit_idea(idea_id):
         raise NotFound
 
     user_id = current_user.user_id
-    if user_id != idea.user.user_id:
+    if user_id != idea.user_id:
         raise Unauthorized('You can only edit your own ideas.')
 
     title = Parser.string('title', max=500)

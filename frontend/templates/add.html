@@ -7,8 +7,13 @@
       $('#form').submit(function(e)
       {
         $.ajax({
+        {% if idea is defined %}
+          type: "PUT",
+          url: "/api/1/ideas/{{ idea.idea_id }}",
+        {% else %}
           type: "POST",
           url: "/api/1/ideas/",
+        {% endif %}
           data: JSON.stringify($("#form").serializeObject()),
           contentType: "application/json",
           success: function(data, tStatus)
@@ -39,24 +44,28 @@
    <div class="container">
       <div class="row">
          <div class="col-md-6 col-md-offset-3">
+         {% if idea is defined %}
+            <h1>Edit Idea</h1>
+         {% else %}
             <h1>Post an Idea</h1>
+         {% endif %}
             <form id="form" role="form" method="post">
                <div class="form-group">
-                  <input name="title" type="text" class="form-control" placeholder="Title" required autofocus>
+                  <input name="title"{% if idea is defined %} value="{{ idea.title }}" {% endif %} type="text" class="form-control" placeholder="Title" required autofocus>
                </div>
 
                <div class="form-group">
-                  <textarea name="desc" class="form-control" rows="10" placeholder="Content" required></textarea>
+                  <textarea name="desc" class="form-control" rows="10" placeholder="Content" required> {% if idea is defined %} {{ idea.desc_md }} {% endif %} </textarea>
                </div>
 
                <div class="form-group">
-                  <input name="tags" type="text" class="form-control" placeholder="Put some tags (comma separated)" data-toggle="popover" data-title="Error ocurred while adding tags." data-container="body" data-content="Please make sure that values are comma separated.">
+                  <input name="tags" {% if idea is defined %} value="{{ idea.tags | join(', ') }}" {% endif %} type="text" class="form-control" placeholder="Put some tags (comma separated)" data-toggle="popover" data-title="Error ocurred while adding tags." data-container="body" data-content="Please make sure that values are comma separated.">
                </div>
 
                <!-- Todo: Handle Previews -->
                <button class="btn btn-success">Submit</button>
                <!-- Todo: Show a "You'll lose data" Popup via JS -->
-               <a id="cancel" href="/" class="btn btn-default">Cancel</a>
+               <button onclick="history.go(-1);" class="btn btn-default">Cancel</button>
             </form>
          </div>
       </div>
