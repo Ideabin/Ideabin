@@ -18,8 +18,8 @@
       {% if current_user.username != idea.user.username %}
       <div class="row">
         <!-- Todo: Unvote button. Github like toggle state? -->
-        <button id="vote" class="btn btn-default pull-left"> <i class="fa fa-thumbs-o-up"></i>   Vote | {{ idea.vote_count }}</button>
-        <button id="subscribe" class="btn btn-success pull-right"> <i class="fa fa-flag"></i>    Subscribe</button>
+        <button id="vote" class="btn btn-default pull-left">{% if is_voted %}Unvote{% else %}Vote{% endif %} | {{ idea.vote_count }}</button>
+        <button id="subscribe" class="btn btn-success pull-right">{% if current_user.user_id | string in idea.subscribers %}Unsubscribe{% else %}Subscribe{% endif %}</button>
       </div>
         <hr>
       {% endif %}
@@ -34,8 +34,8 @@
       {% endfor %}
       </p>
     </div>
-    {% endif %}
     <hr>
+    {% endif %}
 
     {% if current_user.is_authenticated() %}
       {% if current_user.username == idea.user.username %}
@@ -72,7 +72,29 @@
                 url: "/api/1/ideas/{{ idea.idea_id }}/vote/",
                 success: function(data, tStatus)
                 {
-                  $('#vote').text('Vote | ' + data.vote_count)
+                  $('#vote').text(function(i, text) {
+                    return (text.indexOf("Vote") != -1 ? "Unvote | " : "Vote | ") + data.vote_count ;
+                  });
+                },
+                error:function(jqXHR, tStatus, errorThrown)
+                {
+                  data = JSON.parse(jqXHR.responseText);
+                  console.log(data);
+                }
+              });
+            return e.preventDefault();
+            });
+
+            $('#subscribe').click(function(e)
+            {
+              $.ajax({
+                type: "POST",
+                url: "/api/1/ideas/{{ idea.idea_id }}/subscribe/",
+                success: function(data, tStatus)
+                {
+                  $('#subscribe').text(function(i, text) {
+                    return text === "Subscribe" ? "Unsubscribe" : "Subscribe";
+                  });
                 },
                 error:function(jqXHR, tStatus, errorThrown)
                 {

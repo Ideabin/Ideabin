@@ -14,6 +14,7 @@ from server.exceptions import *
 
 from server.ideas.models import Idea
 from server.users.models import User
+from server.votes.models import Vote
 from server.comments.models import Comment
 
 frontend_bp = Blueprint('frontend', __name__)
@@ -61,7 +62,10 @@ def show_idea(idea_id):
     idea = Idea.query.get_or_404(idea_id)
     comments = Comment.query.filter_by(idea_id=idea_id) \
         .order_by(Comment.created_on.asc())
-    return render_template('idea.html', idea=idea, comments=comments)
+    vote = Vote.query.filter_by(user_id=current_user.user_id,
+                                idea_id=idea_id).first()
+    return render_template('idea.html', idea=idea,
+                           comments=comments, is_voted=vote)
 
 
 @frontend_bp.route('/i/<uuid:idea_id>/edit/', endpoint='edit_idea')
