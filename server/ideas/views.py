@@ -66,8 +66,7 @@ def create_idea():
     if not request.json:
         raise InvalidRequest
 
-    # Todo: These should probably be a string with some max len
-    title = Parser.anything('title')
+    title = Parser.string('title', max=500)
     desc = Parser.anything('desc')
     status = Parser.string('status', max=20, optional=True)
     tags = Parser.list('tags', optional=True)

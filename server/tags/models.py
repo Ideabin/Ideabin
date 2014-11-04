@@ -24,7 +24,7 @@ class Tag(db.Model):
         db.DateTime, default=dt.datetime.utcnow(), nullable=False)
 
     def __init__(self, tagname, desc):
-        self.tagname = tagname
+        self.tagname = tagname.strip()
         self.desc = desc
 
     def __repr__(self):

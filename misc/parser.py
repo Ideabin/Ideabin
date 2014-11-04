@@ -135,7 +135,14 @@ class Parser(object):
                 return None
             else:
                 raise MissingDataError(key)
+
         _l = _l.strip().split(",")
+
+        # Each tag should be in range
+        for e in _l:
+            if len(e) < 2 or len(e) > 50:
+                raise ParserError(key, 'Contains illegal value `%s`' % e)
+
         if elements is not None:
             for e in _l:
                 if e not in elements:

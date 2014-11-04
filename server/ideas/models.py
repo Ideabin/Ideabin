@@ -53,23 +53,19 @@ class Idea(db.Model):
         Add a new idea to the database
         """
         new_idea = Idea(title, desc, user_id)
-
-        # Todo: Create taggings with tagnames passed
-        # The tags themselves should be created if they don't exist
-        if tags:
-            t = tags.split(',')
-            for tag in t:
-                tdata = Tag.query.filter_by(tagname=tag)
-                if tdata:
-                    Tagging.new(tdata.tag_id, new_idea.idea_id)
-                else:
-                    newtag = Tag.new(tag, '')
-                    Tagging.new(newtag.tag_id, new_idea.idea_id)
-
         db.session.add(new_idea)
         db.session.commit()
-
         new_idea.__repr__()
+
+        if tags:
+            for tagname in tags:
+                tag = Tag.query.filter_by(tagname=tagname).first()
+                if tag:
+                    Tagging.new(tag.tag_id, new_idea.idea_id)
+                else:
+                    newtag = Tag.new(tagname, '')
+                    Tagging.new(newtag.tag_id, new_idea.idea_id)
+
         return new_idea
 
     def delete(self):
