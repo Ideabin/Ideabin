@@ -36,8 +36,8 @@ class User(db.Model, UserMixin):
 
     # Note: The UTC timestamps will be converted to correct timezones
     # by the client
-    created_on = db.Column(db.DateTime, default=dt.datetime.utcnow())
-    last_login_on = db.Column(db.DateTime, default=dt.datetime.utcnow())
+    created_on = db.Column(db.DateTime, default=dt.datetime.utcnow)
+    last_login_on = db.Column(db.DateTime, default=dt.datetime.utcnow)
 
     def __init__(self, username, password, email):
         self.username = username

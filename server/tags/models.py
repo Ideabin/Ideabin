@@ -21,7 +21,7 @@ class Tag(db.Model):
 
     desc = db.Column(db.Text(), default='')
     created_on = db.Column(
-        db.DateTime, default=dt.datetime.utcnow(), nullable=False)
+        db.DateTime, default=dt.datetime.utcnow, nullable=False)
 
     def __init__(self, tagname, desc):
         self.tagname = tagname.strip()

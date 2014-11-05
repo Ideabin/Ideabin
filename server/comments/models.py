@@ -27,7 +27,7 @@ class Comment(db.Model):
     desc_html = db.Column(db.Text, nullable=False)
 
     created_on = db.Column(
-        db.DateTime, default=dt.datetime.utcnow(), nullable=False)
+        db.DateTime, default=dt.datetime.utcnow, nullable=False)
 
     def __init__(self, user_id, idea_id, desc):
         self.user_id = user_id

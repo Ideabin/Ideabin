@@ -36,7 +36,7 @@ class Idea(db.Model):
     # Note: The UTC timestamps will be converted to correct timezones
     # by the client
     created_on = db.Column(
-        db.DateTime, default=dt.datetime.utcnow(), nullable=False)
+        db.DateTime, default=dt.datetime.utcnow, nullable=False)
 
     def __init__(self, title, desc, user_id):
         self.title = title
