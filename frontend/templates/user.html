@@ -10,8 +10,8 @@
       <h4 style="margin: 25px 0;">{{ user.username }}</h4>
 
       <ul class="list-inline" style="margin: 35px 0;">
-        <li><a href="{{ user.blog_url }}"><i class="fa fa-github fa-3x"></i></a></li>
-        <li style="margin: 0 30px;"><a href="{{ user.profile_fb }}"><i class="fa fa-facebook fa-3x"></i></a></li>
+        <li><a href="{{ user.github_url }}"><i class="fa fa-github fa-3x"></i></a></li>
+        <li style="margin: 0 30px;"><a href="{{ user.facebook_url }}"><i class="fa fa-facebook fa-3x"></i></a></li>
         <li><a href="{{ user.profile_twitter }}"><i class="fa fa-twitter fa-3x"></i></a></li>
       </ul>
 
@@ -21,13 +21,16 @@
 
   <div class="col-md-8 col-md-offset-1">
     <div class="row" style="margin-top: 30px;">
-      <h3>Latest Activity</h3>
+      <h3>Latest Ideas</h3>
       <hr>
     </div>
-    <div class="row">
-      <h2>Title of the Idea</h2>
-      <p>Etiam porta sem malesuada magna mollis euismod. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean lacinia bibendum nulla sed consectetur.</p>
-      <hr>
+    <div id="ideas">
+      {% for idea in ideas %}
+      <div class="row">
+        <a href="/i/{{ idea.idea_id }}">{{ idea.title | truncate(55) }}</a>
+        <div class="pull-right"><p>{{ idea.created_on.strftime('%a, %d %b') }}</p></div>
+      </div>
+      {% endfor %}
     </div>
   </div>
 </div>

@@ -54,7 +54,10 @@ def show_user(username):
     user = User.query.filter_by(username=username).first()
     if not user:
         raise NotFound
-    return render_template('user.html', user=user)
+
+    ideas = Idea.query.filter_by(user_id=user.user_id).\
+        order_by(Idea.created_on.desc()).limit(50)
+    return render_template('user.html', user=user, ideas=ideas)
 
 
 @frontend_bp.route('/i/<uuid:idea_id>', endpoint='idea')
