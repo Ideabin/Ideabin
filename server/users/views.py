@@ -153,9 +153,10 @@ def edit_idea(user_id):
     if this_user_id != user_id:
         raise Unauthorized('You can only edit your own profile.')
 
-    username = Parser.string('username', optional=True)
-    email = Parser.email('email', optional=True)
-    password = Parser.anything('password', optional=True)
+    # Todo: (7) Decide what to do about these?
+    # username = Parser.string('username', optional=True)
+    # email = Parser.email('email', optional=True)
+    # password = Parser.anything('password', optional=True)
 
     first_name = Parser.string('first_name', optional=True)
     last_name = Parser.string('last_name', optional=True)
@@ -167,15 +168,12 @@ def edit_idea(user_id):
 
     user = User.update(
         user,
-        username,
-        # password,
-        email,
-        first_name,
-        last_name,
-        blog_url,
-        facebook_url,
-        twitter_url,
-        github_url
+        first_name=first_name,
+        last_name=last_name,
+        blog_url=blog_url,
+        facebook_url=facebook_url,
+        twitter_url=twitter_url,
+        github_url=github_url
     )
 
     return make_response(jsonify(user.json), 201)

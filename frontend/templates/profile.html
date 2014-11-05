@@ -1,12 +1,42 @@
 {% extends 'base.html' %}
+{% block script %}
+  {{ super() }}
+  <script>
+    $(document).ready(function()
+    {
+      $('#profileForm').submit(function(e)
+      {
+        $.ajax({
+          type: "PUT",
+          url: "/api/1/users/{{ user.user_id }}",
+          data: JSON.stringify($("#profileForm").serializeObject()),
+          contentType: "application/json",
+          // Todo: (9) Display errors with Bootstrap Popovers (and success?)
+          success: function(data, tStatus)
+          {
+            location.reload(false);
+          },
+          error:function(jqXHR, tStatus, errorThrown)
+          {
+            data = JSON.parse(jqXHR.responseText);
+            console.log(data);
+          }
+        });
+
+        return e.preventDefault();
+      });
+    });
+  </script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
-  <div class="col-md-6 col-md-offset-3" style="margin-bottom: 15px;">
+  <div class="col-md-6 col-md-offset-3">
     <div class="form-group" style="margin-top: 50px; margin-bottom: 30px;">
       <h3>Edit Profile</h3>
     </div>
 
-    <form role="form" type="post">
+    <form id="profileForm" role="form" type="post">
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
@@ -26,7 +56,7 @@
           <div class="form-group">
             <div class="input-group margin-bottom-sm">
               <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
-              <input value="{{ user.username }}" class="form-control" type="text" placeholder="Username" disabled="true">
+              <input value="{{ user.username }}" name="username" class="form-control" type="text" placeholder="Username" disabled="true">
             </div>
           </div>
         </div>
@@ -35,35 +65,35 @@
       <div class="form-group">
         <div class="input-group margin-bottom-sm">
           <span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>
-          <input value="{{ user.email }}" class="form-control" type="text" placeholder="Email address" disabled="true">
+          <input value="{{ user.email }}" name="email" class="form-control" type="text" placeholder="Email address" disabled="true">
         </div>
       </div>
 
       <div class="form-group">
         <div class="input-group margin-bottom-sm">
           <span class="input-group-addon"><i class="fa fa-github fa-fw"></i></span>
-          <input value="{{ user.blog_url }}" class="form-control" type="text" placeholder="Blog URL">
+          <input value="{{ user.blog_url }}" name="blog_url" class="form-control" type="text" placeholder="Blog URL">
         </div>
       </div>
 
       <div class="form-group">
         <div class="input-group margin-bottom-sm">
           <span class="input-group-addon"><i class="fa fa-github fa-fw"></i></span>
-          <input value="{{ user.github_url }}" class="form-control" type="text" placeholder="Github">
+          <input value="{{ user.github_url }}" name="github_url" class="form-control" type="text" placeholder="Github">
         </div>
       </div>
 
       <div class="form-group">
         <div class="input-group margin-bottom-sm">
           <span class="input-group-addon"><i class="fa fa-facebook fa-fw"></i></span>
-          <input value="{{ user.facebook_url }}" class="form-control" type="text" placeholder="Facebook">
+          <input value="{{ user.facebook_url }}" name="facebook_url" class="form-control" type="text" placeholder="Facebook">
         </div>
       </div>
 
       <div class="form-group">
         <div class="input-group margin-bottom-sm">
           <span class="input-group-addon"><i class="fa fa-twitter fa-fw"></i></span>
-          <input value="{{ user.twitter_url }}" class="form-control" type="text" placeholder="Twitter">
+          <input value="{{ user.twitter_url }}" name="twitter_url" class="form-control" type="text" placeholder="Twitter">
         </div>
       </div>
 
