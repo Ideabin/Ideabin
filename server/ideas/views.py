@@ -16,7 +16,6 @@ from flask_login import (
 from sqlalchemy.sql import text
 
 from misc import db
-from misc.sql import idea_to_json
 from server.exceptions import *
 
 from misc.parser import Parser
@@ -62,9 +61,10 @@ def get_idea(idea_id):
     """
 
     idea = Idea.query.from_statement(
-        text("SELECT * FROM idea where idea_id=:idea_id")).\
-        params(idea_id=str(idea_id)).all()
-    # idea = Idea.query.filter_by(idea_id=idea_id).first()
+        text("SELECT * FROM idea WHERE idea_id = :id").
+        bindparams(id=idea_id.hex)).first()
+    idea = Idea.query.filter_by(idea_id=idea_id).first()
+
     if not idea:
         raise NotFound
 
@@ -108,13 +108,14 @@ def delete_idea(idea_id):
         # idea = Idea.query.filter_by(idea_id=idea_id).first()
         idea = Idea.query.from_statement(
             text("SELECT * FROM idea where idea_id=:idea_id")).\
-            params(idea_id=str(idea_id)).all()
+            params(idea_id=idea_id.hex).all()
     else:
         # idea = Idea.query.filter_by(
         #     idea_id=idea_id, user_id=current_user.user_id).first()
         idea = Idea.query.from_statement(text(
             "SELECT * FROM idea where idea_id=:idea_id AND user_id=:user_id")). \
-            params(idea_id=str(idea_id), user_id=current_user.user_id).all()
+            params(
+                idea_id=idea_id.hex, user_id=current_user.user_id).all()
 
     if not idea:
         raise NotFound
@@ -133,7 +134,10 @@ def edit_idea(idea_id):
     if not request.json:
         raise InvalidRequest
 
-    idea = Idea.query.filter_by(idea_id=idea_id).first()
+    idea = Idea.query.from_statement(
+        text("SELECT * FROM idea where idea_id=:idea_id")).\
+        params(idea_id=idea_id.hex).all()
+    # idea = Idea.query.filter_by(idea_id=idea_id).first()
     if not idea:
         raise NotFound
 
@@ -198,7 +202,10 @@ def toggle_subscription(idea_id):
     """
 
     user_id = current_user.user_id
-    sub = IdeaSub.query.filter_by(sub_by=user_id, sub_to=idea_id).first()
+    sub = IdeaSub.query.from_statement(text(
+        "SELECT * from idea_sub where sub_by=:by AND sub_to=:to").params(
+        by=user_id.hex, to=idea_id.hex)).all()
+    # sub = IdeaSub.query.filter_by(sub_by=user_id, sub_to=idea_id).first()
     if not sub:
         IdeaSub.new(user_id, idea_id)
         msg = "You are now subscribed."
