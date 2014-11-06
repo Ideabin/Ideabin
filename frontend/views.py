@@ -74,6 +74,10 @@ def show_idea(idea_id):
 @frontend_bp.route('/i/<uuid:idea_id>/edit/', endpoint='edit_idea')
 @login_required
 def edit_idea(idea_id):
-    idea = Idea.query.filter_by(user_id=current_user.user_id,
-                                idea_id=idea_id).first()
+    if current_user.is_admin():
+        idea = Idea.query.filter_by(idea_id=idea_id).first()
+    else:
+        idea = Idea.query.filter_by(
+            user_id=current_user.user_id, idea_id=idea_id).first()
+
     return render_template('add.html', idea=idea)

@@ -38,7 +38,7 @@
     {% endif %}
 
     {% if current_user.is_authenticated() %}
-      {% if current_user.username == idea.user.username %}
+      {% if current_user.username == idea.user.username or current_user.is_admin() %}
         <div class="row">
           <a id="edit" href="{{ url_for('frontend.edit_idea', idea_id=idea.idea_id) }}" class="btn btn-default pull-left">
           <i class="fa fa-pencil-square-o fa"></i>   Edit</a>

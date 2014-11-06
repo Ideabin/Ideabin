@@ -84,9 +84,12 @@ def delete_idea(idea_id):
     """
     Delete the idea with matching idea_id.
     """
+    if current_user.is_admin():
+        idea = Idea.query.filter_by(idea_id=idea_id).first()
+    else:
+        idea = Idea.query.filter_by(
+            idea_id=idea_id, user_id=current_user.user_id).first()
 
-    idea = Idea.query.filter_by(
-        idea_id=idea_id, user_id=current_user.user_id).first()
     if not idea:
         raise NotFound
 
@@ -108,7 +111,7 @@ def edit_idea(idea_id):
         raise NotFound
 
     user_id = current_user.user_id
-    if user_id != idea.user_id:
+    if not (user_id == idea.user_id or current_user.is_admin()):
         raise Unauthorized('You can only edit your own ideas.')
 
     title = Parser.string('title', max=500)
