@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <div class="col-md-3">
+    <div class="row text-center" style="margin-top: 30px;">
+      <h2 style="margin-bottom: 50px;">{{ tag.tagname | title }}</h2>
+      <!-- Todo: Edit tag name and description -->
+      <p>{{ tag.desc | safe}}</p>
+      <button id="subscribe" class="btn btn-success"><i class="fa fa-flag"></i>       Subscribe</button>
+    </div>
+  </div>
+
+  <div class="col-md-8 col-md-offset-1">
+    <div class="row" style="margin-top: 30px;">
+      <h3>Latest Ideas</h3>
+      <hr>
+    </div>
+    <div id="ideas">
+      {% for idea in ideas %}
+      <div class="row">
+        <a href="/i/{{ idea.idea_id }}">{{ idea.title | truncate(55) }}</a>
+        <div class="pull-right"><p>{{ idea.created_on.strftime('%a, %d %b') }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

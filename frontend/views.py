@@ -17,6 +17,8 @@ from server.ideas.models import Idea
 from server.users.models import User
 from server.votes.models import Vote
 from server.comments.models import Comment
+from server.tags.models import Tag
+from server.tagging.models import Tagging
 
 frontend_bp = Blueprint('frontend', __name__)
 
@@ -59,6 +61,19 @@ def show_user(username):
     ideas = Idea.query.filter_by(user_id=user.user_id) \
         .order_by(Idea.created_on.desc()).limit(50)
     return render_template('user.html', user=user, ideas=ideas)
+
+
+@frontend_bp.route('/t/<string:tagname>', endpoint='tag')
+def show_tag(tagname):
+    tag = Tag.query.filter_by(tagname=tagname).first()
+    if not tag:
+        raise NotFound
+
+    ideas = []
+    for idea in tag.ideas:
+        ideas.append(Idea.query.filter_by(idea_id=idea).first())
+
+    return render_template('tag.html', tag=tag, ideas=ideas)
 
 
 @frontend_bp.route('/i/<uuid:idea_id>', endpoint='idea')

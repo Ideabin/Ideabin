@@ -19,6 +19,7 @@ class Tag(db.Model):
     tag_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
     tagname = db.Column(db.String(50), unique=True, nullable=False)
 
+    # Todo: Tag description should be makrdown?
     desc = db.Column(db.Text(), default='')
     created_on = db.Column(
         db.DateTime, default=dt.datetime.utcnow, nullable=False)
