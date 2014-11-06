@@ -58,7 +58,6 @@ def get_idea(idea_id):
 
 
 @ideas_bp.route('/', endpoint='create', methods=['POST'])
-@login_required
 def create_idea():
     """
     Creates a new idea with the json data sent
@@ -71,7 +70,10 @@ def create_idea():
     status = Parser.string('status', max=20, optional=True)
     tags = Parser.list('tags', optional=True)
 
-    new = Idea.new(title, desc, current_user.user_id, tags)
+    if current_user.is_anonymous():
+        new = Idea.new(title, desc, User.get_anon().user_id, tags)
+    else:
+        new = Idea.new(title, desc, current_user.user_id, tags)
 
     return make_response(jsonify(new.json), 201)
 

@@ -51,6 +51,10 @@ class User(db.Model, UserMixin):
     def get(cls, **kwargs):
         return cls.query.filter_by(**kwargs).first()
 
+    @staticmethod
+    def get_anon():
+        return User.query.filter_by(username='anonymous').first()
+
     def new(username, password, email):
         """
         Add a new user to the database
