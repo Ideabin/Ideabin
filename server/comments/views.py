@@ -18,6 +18,7 @@ from flask_login import (
 from sqlalchemy.sql import text
 
 from misc.parser import Parser
+from misc.uuid import hex_uuid
 
 from .models import Comment
 from server.users.models import User
@@ -55,9 +56,9 @@ def get_comment(idea_id, comment_id):
     Get a specific comment with matching comment_id
     """
 
-    comment = Comment.query.from_statement(
-        text("SELECT * from comment WHERE comment_id=:comment_id AND idea_id=:idea_id")).\
-        params(comment_id=comment_id, idea_id=idea_id).all()
+    comment = Comment.query.from_statement(text(
+        "SELECT * from comment WHERE comment_id=:comment_id AND idea_id=:idea_id").
+        params(comment_id=comment_id, idea_id=idea_id)).all()
     # comment = Comment.query.filter_by(
     #     comment_id=comment_id, idea_id=idea_id).first()
     if not comment:
@@ -107,8 +108,10 @@ def delete_comment(idea_id, comment_id):
     user_id = current_user.user_id
     comment = Comment.query.from_statement(
         text("SELECT * from comment WHERE comment_id=:comment_id "
-             "AND idea_id=:idea_id AND user_id=user_id")).\
-        params(comment_id=comment_id, idea_id=idea_id, user_id=user_id).all()
+             "AND idea_id=:idea_id AND user_id=user_id").params(
+            comment_id=hex_uuid(comment_id),
+            idea_id=hex_uuid(idea_id),
+            user_id=hex_uuid(user_id))).all()
     # comment = Comment.query.filter_by(
     #     comment_id=comment_id, user_id=user_id, idea_id=idea_id).first()
     if not comment:
