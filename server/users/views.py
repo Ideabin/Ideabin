@@ -18,6 +18,7 @@ from sqlalchemy import or_
 
 from misc import db
 from misc.parser import Parser
+from misc.uuid import hex_uuid
 
 from server.exceptions import *
 
@@ -65,7 +66,7 @@ def get_user(uid):
     """
     u = User.query.from_statement(
         text("SELECT * FROM user where user_id=:uid")).\
-        params(uid=str(uid)).all()
+        params(uid=hex_uuid(uid)).all()
     # u = User.query.filter_by(user_id=uid).first()
     if not u:
         raise NotFound
@@ -86,12 +87,14 @@ def create_user():
     email = Parser.email('email')
     password = Parser.anything('password')
 
-    u = User.query.filter(
-        or_(
-            User.username == username,
-            User.email == email)
-    ).first()
-
+    # u = User.query.filter(
+    #     or_(
+    #         User.username == username,
+    #         User.email == email)
+    # ).first()
+    u = User.query.from_statement(text(
+        "SELECT * FROM user where username=:username OR email=:email").params(
+        username=username, email=email)).all()
     if u:
         raise Conflict('The user already exists.')
 
@@ -135,7 +138,10 @@ def toggle_subscription(user_id):
     if this_user_id == user_id:
         raise Conflict("You can't subscribe yourself.")
 
-    sub = UserSub.query.filter_by(sub_by=this_user_id, sub_to=user_id).first()
+    # sub = UserSub.query.filter_by(sub_by=this_user_id, sub_to=user_id).first()
+    sub = UserSub.query.from_statement(text(
+        "SELECT * FROM user_sub where sub_by=:by AND sub_to=:to").params(
+        by=hex_uuid(this_user_id), to=hex_uuid(user_id))).all()
     if not sub:
         UserSub.new(this_user_id, user_id)
         msg = "You are now subscribed."
@@ -155,7 +161,10 @@ def edit_idea(user_id):
     if not request.json:
         raise InvalidRequest
 
-    user = User.query.filter_by(user_id=user_id).first()
+    # user = User.query.filter_by(user_id=user_id).first()
+    user = User.query.from_statement(
+        text("SELECT * FROM user WHERE user_id==:user_id")).\
+        params(user_id=uid).all()
     if not user:
         raise NotFound
 
