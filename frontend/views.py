@@ -13,6 +13,7 @@ from flask_login import (
 
 # Todo: (7) Create frontend based exceptions and an error page
 from server.exceptions import *
+from misc.uuid import hex_uuid
 
 from server.ideas.models import Idea
 from server.users.models import User
@@ -56,7 +57,9 @@ def profile():
 
 @frontend_bp.route('/explore/', endpoint='explore')
 def explore():
-    ideas = Idea.query.order_by(Idea.created_on.desc()).limit(50)
+    # ideas = Idea.query.order_by(Idea.created_on.desc()).limit(50)
+    ideas = Idea.query.from_statement(text(
+        "SELECT * FROM idea ORDER BY created_on DESC")).all()
     return render_template('explore.html', ideas=ideas)
 
 
@@ -96,12 +99,15 @@ def search():
 
 @frontend_bp.route('/u/<string:username>', endpoint='user')
 def show_user(username):
-    user = User.query.filter_by(username=username).first()
+    u = User.query.from_statement(
+        text("SELECT * FROM user where username=:username")
+        .params(username=username)).all()
     if not user:
         raise NotFound
 
-    ideas = Idea.query.filter_by(user_id=user.user_id) \
-        .order_by(Idea.created_on.desc()).limit(50)
+    ideas = Idea.query.from_statement(text(
+        "SELECT * FROM idea where user_id=:id ORDER BY created_on LIMIT 50")
+        .params(id=hex_uuid(user.user_id))).all()
     return render_template('user.html', user=user, ideas=ideas)
 
 
@@ -121,13 +127,17 @@ def show_tag(tagname):
 @frontend_bp.route('/i/<uuid:idea_id>', endpoint='idea')
 def show_idea(idea_id):
     idea = Idea.query.get_or_404(idea_id)
-    comments = Comment.query.filter_by(idea_id=idea_id) \
-        .order_by(Comment.created_on.asc())
+
+    comments = Comment.query.from_statement(
+        text("SELECT * FROM idea where idea_id=:id ORDER BY created_on ASC")
+        .params(id=hex_uuid(idea_id)))
 
     vote = False
     if current_user.is_authenticated():
-        vote = Vote.query.filter_by(user_id=current_user.user_id,
-                                    idea_id=idea_id).first()
+        vote = Vote.query.from_statement(
+            text("SELECT * FROM vote where user_id=:uid AND idea_id=:iid")
+            .params(uid=hex_uuid(current_user.user_id),
+                    iid=hex_uuid(idea_id))).all()
 
     return render_template('idea.html', idea=idea,
                            comments=comments, is_voted=vote)
@@ -137,10 +147,14 @@ def show_idea(idea_id):
 @login_required
 def edit_idea(idea_id):
     if current_user.is_admin():
-        idea = Idea.query.filter_by(idea_id=idea_id).first()
+        idea = Idea.query.from_statement(
+            text("SELECT * FROM idea WHERE idea_id = :id").
+            bindparams(id=hex_uuid(idea_id))).first()
     else:
-        idea = Idea.query.filter_by(
-            user_id=current_user.user_id, idea_id=idea_id).first()
+        idea = Idea.query.from_statement(text(
+            "SELECT * FROM idea where idea_id=:idea_id AND user_id=:user_id")). \
+            params(
+                idea_id=hex_uuid(idea_id), user_id=current_user.user_id).all()
 
     if not idea:
         raise NotFound
