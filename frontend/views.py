@@ -2,6 +2,7 @@ from flask import (
     Blueprint,
     redirect,
     render_template,
+    request,
     url_for
 )
 
@@ -49,6 +50,14 @@ def profile():
 @frontend_bp.route('/explore/', endpoint='explore')
 def explore():
     ideas = Idea.query.order_by(Idea.created_on.desc()).limit(50)
+    return render_template('explore.html', ideas=ideas)
+
+
+@frontend_bp.route('/search/', endpoint='search', methods=['GET'])
+def search():
+    string = request.form['string']
+    ideas = Idea.query.filter_by(Idea.title.like('%' + string + '%')).order_by(
+        Idea.created_on.desc()).limit(50)
     return render_template('explore.html', ideas=ideas)
 
 
