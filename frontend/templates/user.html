@@ -15,8 +15,9 @@
         <li style="margin: 0 30px;"><a href="{{ user.facebook_url }}"><i class="fa fa-facebook fa-3x"></i></a></li>
         <li><a href="{{ user.twitter_url }}"><i class="fa fa-twitter fa-3x"></i></a></li>
       </ul>
-
+      {% if current_user.is_authenticated() and current_user.username != user.username %}
       <a class="btn btn-success" href="#"><i class="fa fa-flag"></i>       Subscribe</a>
+      {% endif %}
     </div>
   </div>
 

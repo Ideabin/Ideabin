@@ -10,6 +10,7 @@ from flask_login import (
     login_required
 )
 
+# Todo: (7) Create frontend based exceptions and an error page
 from server.exceptions import *
 
 from server.ideas.models import Idea
@@ -55,8 +56,8 @@ def show_user(username):
     if not user:
         raise NotFound
 
-    ideas = Idea.query.filter_by(user_id=user.user_id).\
-        order_by(Idea.created_on.desc()).limit(50)
+    ideas = Idea.query.filter_by(user_id=user.user_id) \
+        .order_by(Idea.created_on.desc()).limit(50)
     return render_template('user.html', user=user, ideas=ideas)
 
 
@@ -65,8 +66,12 @@ def show_idea(idea_id):
     idea = Idea.query.get_or_404(idea_id)
     comments = Comment.query.filter_by(idea_id=idea_id) \
         .order_by(Comment.created_on.asc())
-    vote = Vote.query.filter_by(user_id=current_user.user_id,
-                                idea_id=idea_id).first()
+
+    vote = False
+    if current_user.is_authenticated():
+        vote = Vote.query.filter_by(user_id=current_user.user_id,
+                                    idea_id=idea_id).first()
+
     return render_template('idea.html', idea=idea,
                            comments=comments, is_voted=vote)
 
@@ -79,5 +84,8 @@ def edit_idea(idea_id):
     else:
         idea = Idea.query.filter_by(
             user_id=current_user.user_id, idea_id=idea_id).first()
+
+    if not idea:
+        raise NotFound
 
     return render_template('add.html', idea=idea)

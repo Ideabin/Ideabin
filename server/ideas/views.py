@@ -167,5 +167,3 @@ def toggle_subscription(idea_id):
         msg = "You are now unsubscribed."
 
     return make_response(jsonify({"message": msg}), 200)
-
-# Todo: Update idea

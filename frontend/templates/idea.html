@@ -12,18 +12,16 @@
       <hr/>
     </div>
   </div>
-
   <div class="col-md-3 col-md-offset-1" style="margin-top: 50px;">
-    {% if current_user.is_authenticated() %}
-      {% if current_user.username != idea.user.username %}
-      <div class="row">
-        <!-- Todo: Unvote button. Github like toggle state? -->
-        <button id="vote" class="btn btn-default pull-left">{% if is_voted %}Unvote{% else %}Vote{% endif %} | {{ idea.vote_count }}</button>
-        <button id="subscribe" class="btn btn-success pull-right">{% if current_user.user_id | string in idea.subscribers %}Unsubscribe{% else %}Subscribe{% endif %}</button>
-      </div>
-        <hr>
-      {% endif %}
+    <div class="row">
+      <!-- Todo: Unvote button. Github like toggle state? -->
+      <button id="vote" class="btn btn-default pull-left" {% if current_user.is_anonymous() or current_user.username == idea.user.username %}disabled="true"{% endif %} >{% if is_voted %}Unvote{% else %}Vote{% endif %} | {{ idea.vote_count }}</button>
+
+    {% if current_user.is_authenticated() and current_user.username != idea.user.username %}
+      <button id="subscribe" class="btn btn-success pull-right">{% if current_user.user_id | string in idea.subscribers %}Unsubscribe{% else %}Subscribe{% endif %}</button>
     {% endif %}
+    </div>
+    <hr>
 
     {% if idea.tags %}
     <div class="row">
