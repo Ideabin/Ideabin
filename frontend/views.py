@@ -30,6 +30,10 @@ def homepage():
     return redirect(url_for('frontend.explore'))
     # return render_template('index.html')
 
+@frontend_bp.route('/about/', endpoint='about')
+def about_us():
+    return render_template('about.html')
+
 
 @frontend_bp.route('/add/', endpoint='add')
 def add_idea():
