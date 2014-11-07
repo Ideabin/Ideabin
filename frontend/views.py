@@ -55,9 +55,12 @@ def explore():
 
 @frontend_bp.route('/search/', endpoint='search', methods=['GET'])
 def search():
-    string = request.form['string']
-    ideas = Idea.query.filter_by(Idea.title.like('%' + string + '%')).order_by(
-        Idea.created_on.desc()).limit(50)
+    try:
+        term = request.args['q']
+        ideas = Idea.query.filter(Idea.title.contains(term)) \
+            .order_by(Idea.created_on.desc()).limit(50).all()
+    except:
+        ideas = []
     return render_template('explore.html', ideas=ideas)
 
 
