@@ -131,6 +131,14 @@ class User(db.Model, UserMixin):
         return url_for('users.id', uid=self.user_id, _external=True)
 
     @property
+    def basic(self):
+        json = dict(
+            user_id=str(self.user_id),
+            username=self.username
+        )
+        return json
+
+    @property
     def json(self):
         """
         Return the user's data in json form

@@ -39,6 +39,10 @@ class Comment(db.Model):
     def __repr__(self):
         return '<Comment %r>' % self.desc_md
 
+    @classmethod
+    def get(cls, **kwargs):
+        return cls.query.filter_by(**kwargs).first()
+
     def new(user_id, idea_id, desc):
         """
         Add a new comment to the database
@@ -68,16 +72,7 @@ class Comment(db.Model):
 
     @property
     def user(self):
-        """
-        Get basic info of the user who created comment
-        """
-        user = User.query.filter_by(user_id=self.user_id).first()
-        json = dict(
-            user_id=str(user.user_id),
-            username=user.username,
-            created_on=user.created_on.strftime('%a, %d %b %Y %H:%M:%S')
-        )
-        return json
+        return User.get(user_id=self.user_id).basic
 
     @property
     def json(self):

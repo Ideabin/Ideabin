@@ -31,6 +31,10 @@ class Tag(db.Model):
     def __repr__(self):
         return '<Tag %r>' % self.tagname
 
+    @classmethod
+    def get(cls, **kwargs):
+        return cls.query.filter_by(**kwargs).first()
+
     def new(tagname, desc=''):
         """
         Add a new tag to the database

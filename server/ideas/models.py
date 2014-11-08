@@ -48,6 +48,10 @@ class Idea(db.Model):
     def __repr__(self):
         return '<Idea %r>' % self.title
 
+    @classmethod
+    def get(cls, **kwargs):
+        return cls.query.filter_by(**kwargs).first()
+
     def new(title, desc, user_id, tags=None):
         """
         Add a new idea to the database
@@ -113,16 +117,7 @@ class Idea(db.Model):
 
     @property
     def user(self):
-        """
-        Get basic info of the user of current idea
-        """
-        user = User.query.filter_by(user_id=self.user_id).first()
-        json = dict(
-            user_id=str(user.user_id),
-            username=user.username,
-            created_on=user.created_on.strftime('%a, %d %b %Y %H:%M:%S')
-        )
-        return json
+        return User.get(user_id=self.user_id).basic
 
     @property
     def tags(self):
@@ -137,6 +132,14 @@ class Idea(db.Model):
             tags.append(Tag.query.filter_by(tag_id=t.tag_id).first().tagname)
 
         return tags
+
+    @property
+    def basic(self):
+        json = dict(
+            idea_id=str(self.idea_id),
+            title=self.title
+        )
+        return json
 
     @property
     def json(self):
