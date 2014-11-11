@@ -8,6 +8,7 @@ import uuid
 import datetime as dt
 
 from server.users.models import User
+from server.ideas.models import Idea
 
 
 class NotifIdeaByUser(db.Model):
@@ -28,10 +29,10 @@ class NotifIdeaByUser(db.Model):
         nullable=False)
 
     # Todo: Add proper Read/Unread support
-    read = db.Column(db.Boolean, default=False)
+    read = db.Column(db.Boolean, nullable=False, server_default='False')
 
     created_on = db.Column(
-        db.DateTime, default=dt.datetime.utcnow(), nullable=False)
+        db.DateTime, default=dt.datetime.utcnow, nullable=False)
 
     def __init__(self, user_by, user_to, idea_id):
         self.user_by = user_by
@@ -39,13 +40,13 @@ class NotifIdeaByUser(db.Model):
         self.idea_id = idea_id
 
     def __repr__(self):
-        return '<Notification %r>' % self.user_id
+        return '<Notif Idea By User: %r>' % self.notif_id
 
     def new(user_by, user_to, idea_id):
         """
         Add a new notif to the database
         """
-        notif = Notification(user_by, user_to, idea_id)
+        notif = NotifIdeaByUser(user_by, user_to, idea_id)
         db.session.add(notif)
         db.session.commit()
 
@@ -57,17 +58,17 @@ class NotifIdeaByUser(db.Model):
         return Idea.get(idea_id=self.idea_id)
 
     @property
-    def message(self):
+    def title(self):
         username = User.get(user_id=self.user_by).username
         return "%s added a new idea \"%s\"." % (username, self.idea.title)
 
     @property
     def json(self):
         json = dict(
-            id=self.notif_id,
+            id=str(self.notif_id),
             by=User.get(user_id=self.user_by).basic,
             to=User.get(user_id=self.user_to).basic,
-            message=self.message
+            title=self.title,
             link=self.idea.url,
             object=self.idea.basic,
             created_on=self.created_on.strftime('%a, %d %b %Y %H:%M:%S'),
