@@ -24,7 +24,7 @@
       </div>
 
       <div class="navbar-collapse collapse">
-        <form class="navbar-form navbar-left form-inline" role="search" action="{{ url_for('.search') }}">
+        <form class="navbar-form navbar-left form-inline" role="search" action="{{ url_for('frontend.search') }}">
           <div class="form-group">
             <input name="q" type="text" class="form-control" style="width: 350px" placeholder="Search">
           </div>
@@ -45,6 +45,7 @@
             <li class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" href="#"> {{ current_user.username }} <span class="caret"></span> </a>
               <ul class="dropdown-menu" role="menu">
+                <li><a href="{{ url_for('frontend.notifications') }}">Notifications</a></li>
                 <li><a href="{{ url_for('frontend.profile') }}">Profile</a></li>
                 <li class="divider"></li>
                 <li><a href="{{ url_for('logout.index') }}">Sign out</a></li>

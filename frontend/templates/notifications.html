@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="container">
+    {% if notifs %}
+    <div class="col-md-4 col-md-offset-4">
+      <h2>Notifications</h2>
+    </div>
+
+    <div id="ideas" class="col-md-8 col-md-offset-2">
+      {% for notif in notifs %}
+      <div class="row">
+        <a href="/i/{{ notif.link }}">{{ notif.title }}</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="col-md-offset-4 col-md-8 col-xs-10 col-xs-offset-2">
+      <h1 style="margin: 50px 0;">No notifications found!</h1>
+      <i class="fa fa-meh-o" style="margin-left: 50px;font-size: 200px;"></i>
+    </div>
+    {% endif %}
+  </div>
+{% endblock %}

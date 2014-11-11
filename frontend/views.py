@@ -21,6 +21,8 @@ from server.comments.models import Comment
 from server.tags.models import Tag
 from server.tagging.models import Tagging
 
+from server.notifications.models import NotifIdeaByUser
+
 frontend_bp = Blueprint('frontend', __name__)
 
 
@@ -51,6 +53,15 @@ def profile():
 def explore():
     ideas = Idea.query.order_by(Idea.created_on.desc()).limit(50)
     return render_template('explore.html', ideas=ideas)
+
+
+@frontend_bp.route('/notifications/', endpoint='notifications')
+@login_required
+def explore():
+    notifs = NotifIdeaByUser.query \
+        .filter_by(user_to=current_user.user_id, read=False) \
+        .order_by(NotifIdeaByUser.created_on.desc()).limit(50).all()
+    return render_template('notifications.html', notifs=notifs)
 
 
 @frontend_bp.route('/search/', endpoint='search', methods=['GET'])

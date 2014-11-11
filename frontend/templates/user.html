@@ -16,7 +16,7 @@
         <li><a href="{{ user.twitter_url }}"><i class="fa fa-twitter fa-3x"></i></a></li>
       </ul>
       {% if current_user.is_authenticated() and current_user.username != user.username %}
-      <a class="btn btn-success" href="#"><i class="fa fa-flag"></i>       Subscribe</a>
+      <button id="subscribe" class="btn btn-success">{% if current_user.user_id | string in user.subscribers %}Unsubscribe{% else %}Subscribe{% endif %}</button>
       {% endif %}
     </div>
   </div>
@@ -37,3 +37,30 @@
   </div>
 </div>
 {% endblock %}
+
+{% if current_user.is_authenticated() and current_user.username != user.username %}
+  {% block script %}
+    {{ super() }}
+    <script>
+      $('#subscribe').click(function(e)
+      {
+        $.ajax({
+          type: "POST",
+          url: "/api/1/users/{{ user.user_id }}/subscribe/",
+          success: function(data, tStatus)
+          {
+            $('#subscribe').text(function(i, text) {
+              return text === "Subscribe" ? "Unsubscribe" : "Subscribe";
+            });
+          },
+          error:function(jqXHR, tStatus, errorThrown)
+          {
+            data = JSON.parse(jqXHR.responseText);
+            console.log(data);
+          }
+        });
+      return e.preventDefault();
+      });
+    </script>
+  {% endblock %}
+{% endif %}
