@@ -29,6 +29,7 @@ def create_app():
     from server.ideas.views import ideas_bp
     from server.tags.views import tags_bp
     from server.comments.views import comments_bp
+    from server.notifications.views import notifs_bp
 
     app.register_blueprint(api_bp)
     app.register_blueprint(users_bp, url_prefix='/users')
@@ -36,4 +37,6 @@ def create_app():
 
     app.register_blueprint(ideas_bp, url_prefix='/ideas')
     app.register_blueprint(comments_bp, url_prefix='/ideas')
+
+    app.register_blueprint(notifs_bp, url_prefix='/notifications')
     return app
