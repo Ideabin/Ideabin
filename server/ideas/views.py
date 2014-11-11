@@ -54,16 +54,16 @@ def get_ideas():
     return resp
 
 
-@ideas_bp.route('/<uuid:idea_id>', endpoint='id', methods=['GET'])
+@ideas_bp.route('/<string:idea_id>', endpoint='id', methods=['GET'])
 def get_idea(idea_id):
     """
     Get a specific idea with the matching idea_id
     """
 
+    idea = Idea.query.filter_by(idea_id=idea_id).first()
     idea = Idea.query.from_statement(
         text("SELECT * FROM idea WHERE idea_id = :id").
         bindparams(id=idea_id.hex)).first()
-    idea = Idea.query.filter_by(idea_id=idea_id).first()
 
     if not idea:
         raise NotFound
