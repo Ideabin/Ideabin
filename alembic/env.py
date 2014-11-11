@@ -34,6 +34,8 @@ from server.votes.models import Vote
 
 from server.subscriptions.models import IdeaSub, UserSub, TagSub
 
+from server.notifications.models import NotifIdeaByUser
+
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
