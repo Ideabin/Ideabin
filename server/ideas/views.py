@@ -1,3 +1,4 @@
+import uuid
 import json
 
 from flask import (
@@ -21,6 +22,8 @@ from .models import Idea
 from server.users.models import User
 from server.votes.models import Vote
 from server.subscriptions.models import IdeaSub
+
+from server.notifications.models import NotifIdeaByUser
 
 ideas_bp = Blueprint('ideas', __name__)
 
@@ -74,6 +77,11 @@ def create_idea():
         new = Idea.new(title, desc, User.get_anon().user_id, tags)
     else:
         new = Idea.new(title, desc, current_user.user_id, tags)
+
+        # user.subscribers contains strings
+        for user_id in current_user.subscribers:
+            NotifIdeaByUser.new(
+                current_user.user_id, uuid.UUID(user_id), new.idea_id)
 
     return make_response(jsonify(new.json), 201)
 
