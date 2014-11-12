@@ -18,7 +18,12 @@ from flask_login import (
 from server.users.models import User
 from server.ideas.models import Idea
 
-from server.notifications.models import NotifIdeaByUser
+from server.notifications.models import (
+    NotifIdeaByUser,
+    NotifIdeaUpdate,
+    NotifCommentByUser,
+    NotifCommentOnIdea
+)
 
 notifs_bp = Blueprint('notifs', __name__)
 
@@ -30,10 +35,21 @@ def get_notifs():
     Returns notifications for the user
     """
 
-    # Todo: Add paging to retrieve next 50 notifs
     notifs = NotifIdeaByUser.query \
         .filter_by(user_to=current_user.user_id, read=False) \
-        .limit(50)
+        .limit(50).all()
+
+    notifs += NotifIdeaUpdate.query \
+        .filter_by(user_to=current_user.user_id, read=False) \
+        .limit(50).all()
+
+    notifs += NotifCommentByUser.query \
+        .filter_by(user_to=current_user.user_id, read=False) \
+        .limit(50).all()
+
+    notifs += NotifCommentOnIdea.query \
+        .filter_by(user_to=current_user.user_id, read=False) \
+        .limit(50).all()
 
     resp = make_response(json.dumps([n.json for n in notifs]), 200)
     resp.mimetype = 'application/json'

@@ -140,7 +140,7 @@ def toggle_subscription(user_id):
 @login_required
 def edit_idea(user_id):
     """
-    Update the fields of an idea.
+    Update the fields of a user.
     """
     if not request.json:
         raise InvalidRequest

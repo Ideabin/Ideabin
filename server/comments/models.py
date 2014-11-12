@@ -75,6 +75,14 @@ class Comment(db.Model):
         return User.get(user_id=self.user_id).basic
 
     @property
+    def basic(self):
+        json = dict(
+            comment_id=str(self.comment_id),
+            desc_md=self.desc_md
+        )
+        return json
+
+    @property
     def json(self):
         """
         Return the comment's data in json form
