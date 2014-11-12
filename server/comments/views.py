@@ -1,6 +1,6 @@
 import json
+import uuid
 
-from misc import db
 from server.exceptions import *
 
 from flask import (
@@ -20,6 +20,11 @@ from misc.parser import Parser
 from .models import Comment
 from server.users.models import User
 from server.ideas.models import Idea
+
+from server.notifications.models import (
+    NotifCommentByUser,
+    NotifCommentOnIdea
+)
 
 comments_bp = Blueprint('comments', __name__)
 
@@ -67,8 +72,21 @@ def create_comment(idea_id):
 
     desc = Parser.string('desc')
 
-    comment = Comment.new(current_user.user_id, idea_id, desc)
-    return make_response(jsonify(comment.json), 201)
+    new = Comment.new(current_user.user_id, idea_id, desc)
+
+    idea = Idea.get(idea_id=idea_id)
+
+    # Create notifications for subscribers of idea
+    for user_id in idea.subscribers:
+        NotifCommentOnIdea.new(
+            current_user.user_id, uuid.UUID(user_id), idea_id, new.comment_id)
+
+    # Create notifications for subscribers of user
+    for user_id in current_user.subscribers:
+        NotifCommentByUser.new(
+            current_user.user_id, uuid.UUID(user_id), idea_id, new.comment_id)
+
+    return make_response(jsonify(new.json), 201)
 
 
 @comments_bp.route('/<uuid:idea_id>/comments/<uuid:comment_id>',

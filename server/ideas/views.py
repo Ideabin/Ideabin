@@ -23,7 +23,10 @@ from server.users.models import User
 from server.votes.models import Vote
 from server.subscriptions.models import IdeaSub
 
-from server.notifications.models import NotifIdeaByUser
+from server.notifications.models import (
+    NotifIdeaByUser,
+    NotifIdeaUpdate
+)
 
 ideas_bp = Blueprint('ideas', __name__)
 
@@ -128,6 +131,11 @@ def edit_idea(idea_id):
     tags = Parser.list('tags', optional=True)
 
     idea = Idea.update(idea, title, desc, status, tags)
+
+    # idea.subscribers contains strings
+    for user_id in idea.subscribers:
+        NotifIdeaUpdate.new(
+            current_user.user_id, uuid.UUID(user_id), idea.idea_id)
 
     return make_response(jsonify(idea.json), 201)
 
