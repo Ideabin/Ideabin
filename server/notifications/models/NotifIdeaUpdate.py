@@ -11,8 +11,8 @@ from server.users.models import User
 from server.ideas.models import Idea
 
 
-class NotifIdeaByUser(db.Model):
-    __tablename__ = 'notif_idea_by_user'
+class NotifIdeaUpdate(db.Model):
+    __tablename__ = 'notif_idea_update'
 
     notif_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
 
@@ -40,13 +40,13 @@ class NotifIdeaByUser(db.Model):
         self.idea_id = idea_id
 
     def __repr__(self):
-        return '<Notif Idea By User: %r>' % self.notif_id
+        return '<Notif Idea Update: %r>' % self.notif_id
 
     def new(user_by, user_to, idea_id):
         """
         Add a new notif to the database
         """
-        notif = NotifIdeaByUser(user_by, user_to, idea_id)
+        notif = NotifIdeaUpdate(user_by, user_to, idea_id)
         db.session.add(notif)
         db.session.commit()
 
@@ -60,7 +60,7 @@ class NotifIdeaByUser(db.Model):
     @property
     def title(self):
         username = User.get(user_id=self.user_by).username
-        return "%s added a new idea \"%s\"." % (username, self.idea.title)
+        return "%s updated the idea \"%s\"." % (username, self.idea.title)
 
     @property
     def json(self):

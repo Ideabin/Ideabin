@@ -9,10 +9,11 @@ import datetime as dt
 
 from server.users.models import User
 from server.ideas.models import Idea
+from server.comments.models import Comment
 
 
-class NotifIdeaByUser(db.Model):
-    __tablename__ = 'notif_idea_by_user'
+class NotifCommentOnIdea(db.Model):
+    __tablename__ = 'notif_comment_on_idea'
 
     notif_id = db.Column(UUID(), primary_key=True, default=uuid.uuid4)
 
@@ -28,25 +29,30 @@ class NotifIdeaByUser(db.Model):
         UUID(), db.ForeignKey('idea.idea_id', ondelete='CASCADE'),
         nullable=False)
 
+    comment_id = db.Column(
+        UUID(), db.ForeignKey('comment.comment_id', ondelete='CASCADE'),
+        nullable=False)
+
     # Todo: Add proper Read/Unread support
     read = db.Column(db.Boolean, nullable=False, server_default='0')
 
     created_on = db.Column(
         db.DateTime, default=dt.datetime.utcnow, nullable=False)
 
-    def __init__(self, user_by, user_to, idea_id):
+    def __init__(self, user_by, user_to, idea_id, comment_id):
         self.user_by = user_by
         self.user_to = user_to
         self.idea_id = idea_id
+        self.comment_id = comment_id
 
     def __repr__(self):
-        return '<Notif Idea By User: %r>' % self.notif_id
+        return '<Notif Comment on Idea: %r>' % self.notif_id
 
-    def new(user_by, user_to, idea_id):
+    def new(user_by, user_to, idea_id, comment_id):
         """
         Add a new notif to the database
         """
-        notif = NotifIdeaByUser(user_by, user_to, idea_id)
+        notif = NotifCommentOnIdea(user_by, user_to, idea_id, comment_id)
         db.session.add(notif)
         db.session.commit()
 
@@ -58,9 +64,13 @@ class NotifIdeaByUser(db.Model):
         return Idea.get(idea_id=self.idea_id)
 
     @property
+    def comment(self):
+        return Comment.get(comment_id=self.comment_id)
+
+    @property
     def title(self):
         username = User.get(user_id=self.user_by).username
-        return "%s added a new idea \"%s\"." % (username, self.idea.title)
+        return "A new comment on the idea \"%s\"." % self.idea.title
 
     @property
     def json(self):
