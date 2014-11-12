@@ -34,7 +34,12 @@ from server.votes.models import Vote
 
 from server.subscriptions.models import IdeaSub, UserSub, TagSub
 
-from server.notifications.models import NotifIdeaByUser
+from server.notifications.models import (
+    NotifIdeaByUser,
+    NotifIdeaUpdate,
+    NotifCommentByUser,
+    NotifCommentOnIdea
+)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
