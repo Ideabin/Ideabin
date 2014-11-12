@@ -6,7 +6,9 @@
       <h2 style="margin-bottom: 50px;">{{ tag.tagname | title }}</h2>
       <!-- Todo: Edit tag name and description -->
       <p>{{ tag.desc | safe}}</p>
-      <button id="subscribe" class="btn btn-success"><i class="fa fa-flag"></i>       Subscribe</button>
+      {% if current_user.is_authenticated() %}
+      <button id="subscribe" class="btn btn-success">{% if current_user.user_id | string in tag.subscribers %}Unsubscribe{% else %}Subscribe{% endif %}</button>
+      {% endif %}
     </div>
   </div>
 
@@ -26,3 +28,30 @@
   </div>
 </div>
 {% endblock %}
+
+{% if current_user.is_authenticated() %}
+  {% block script %}
+    {{ super() }}
+    <script>
+      $('#subscribe').click(function(e)
+      {
+        $.ajax({
+          type: "POST",
+          url: "/api/1/tags/{{ tag.tag_id }}/subscribe/",
+          success: function(data, tStatus)
+          {
+            $('#subscribe').text(function(i, text) {
+              return text === "Subscribe" ? "Unsubscribe" : "Subscribe";
+            });
+          },
+          error:function(jqXHR, tStatus, errorThrown)
+          {
+            data = JSON.parse(jqXHR.responseText);
+            console.log(data);
+          }
+        });
+      return e.preventDefault();
+      });
+    </script>
+  {% endblock %}
+{% endif %}
