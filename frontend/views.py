@@ -13,7 +13,6 @@ from flask_login import (
 
 # Todo: (7) Create frontend based exceptions and an error page
 from server.exceptions import *
-from misc.uuid import hex_uuid
 from sqlalchemy.sql import text
 
 from server.ideas.models import Idea
@@ -60,7 +59,7 @@ def profile():
 def explore():
     ideas = Idea.query.from_statement(text(
         "SELECT * FROM idea ORDER BY created_on DESC LIMIT 50")).all()
-    print(ideas)
+    ideas = Idea.query.order_by(Idea.created_on.desc()).limit(50)
     return render_template('explore.html', ideas=ideas)
 
 
@@ -91,12 +90,12 @@ def explore():
 def search():
     try:
         term = request.args['q']
-        ideas = Idea.query.filter(Idea.title.contains(term)) \
-            .order_by(Idea.created_on.desc()).limit(50).all()
-        ideas = Idea.query.from_statement(text(
+        Idea.query.from_statement(text(
             "SELECT * FROM idea where title LIKE :term \
             ORDER BY created_on DESC LIMIT 50")
             .params(term='%' + term + '%')).all()
+        ideas = Idea.query.filter(Idea.title.contains(term)) \
+            .order_by(Idea.created_on.desc()).limit(50).all()
     except:
         ideas = []
     return render_template('explore.html', ideas=ideas)
@@ -124,55 +123,44 @@ def show_tag(tagname):
         "SELECT * FROM tag where tagname=:tagname").params(
         tagname=tagname)).all()
 
-    print(tag)
     if not tag:
         raise NotFound
 
     ideas = []
     for idea in tag[0].ideas:
         idea = idea.replace('-', '')
-        print(idea)
         a = Idea.query.from_statement(text(
             "SELECT * FROM idea where idea_id=:id").params(
             id=str(idea))).all()
-        print(a)
-        ideas.append(a[0])
-        # ideas.append(Idea.query.filter_by(idea_id=idea).first())
+        ideas.append(Idea.query.filter_by(idea_id=idea).first())
 
     return render_template('tag.html', tag=tag[0], ideas=ideas)
 
 
 @frontend_bp.route('/i/<uuid:idea_id>', endpoint='idea')
 def show_idea(idea_id):
-    iid = hex_uuid(idea_id).replace('-', '')
-    # idea = Idea.query.get_or_404(iid)
-
-    print(iid)
-    idea = Idea.query.from_statement(text(
-        "SELECT * FROM idea where idea_id=:id").params(
-        id=iid)).all()
-
-    print(idea)
+    idea = Idea.query.from_statement(
+        text("SELECT * FROM idea where idea_id=:id")
+        .params(id=idea_id.hex)).all()
+    idea = Idea.query.get_or_404(idea_id)
 
     if not idea:
         raise NotFound
 
-    # comments = Comment.query.from_statement(
-    # text("SELECT * FROM idea where idea_id=:id ORDER BY created_on
-    # ASC").params(id=iid)).all()
-
-    # print(comments)
-    # if comments:
-    comments = []
+    Comment.query.from_statement(
+        text(
+            "SELECT * FROM comment where idea_id = :id ORDER BY created_on ASC")
+        .params(id=idea_id.hex)).all()
+    comments = Comment.query.filter_by(idea_id=idea_id) \
+        .order_by(Comment.created_on.asc())
 
     vote = False
-    uid = hex_uuid(current_user.user_id).replace('-', '')
     if current_user.is_authenticated():
         vote = Vote.query.from_statement(
             text("SELECT * FROM vote where user_id=:uid AND idea_id=:iid")
-            .params(uid=uid, iid=iid)).all()
+            .params(uid=current_user.user_id.hex, iid=idea_id.hex)).all()
 
-    return render_template('idea.html', idea=idea[0],
+    return render_template('idea.html', idea=idea,
                            comments=comments, is_voted=vote)
 
 
@@ -180,14 +168,16 @@ def show_idea(idea_id):
 @login_required
 def edit_idea(idea_id):
     if current_user.is_admin():
-        idea = Idea.query.from_statement(
+        Idea.query.from_statement(
             text("SELECT * FROM idea WHERE idea_id = :id").
-            bindparams(id=hex_uuid(idea_id))).first()
+            bindparams(id=idea_id.hex)).first()
+        idea = Idea.get(idea_id=idea_id)
     else:
-        idea = Idea.query.from_statement(text(
-            "SELECT * FROM idea where idea_id=:idea_id AND user_id=:user_id")). \
-            params(
-                idea_id=hex_uuid(idea_id), user_id=current_user.user_id).all()
+        Idea.query.from_statement(
+            text("SELECT * FROM idea where idea_id=:idea_id AND "
+                 " user_id=:user_id")) \
+        .params(idea_id=idea_id.hex, user_id=current_user.user_id).all()
+        idea = Idea.get(user_id=current_user.user_id, idea_id=idea_id)
 
     if not idea:
         raise NotFound

@@ -54,16 +54,16 @@ def get_ideas():
     return resp
 
 
-@ideas_bp.route('/<string:idea_id>', endpoint='id', methods=['GET'])
+@ideas_bp.route('/<uuid:idea_id>', endpoint='id', methods=['GET'])
 def get_idea(idea_id):
     """
     Get a specific idea with the matching idea_id
     """
 
+    Idea.query.from_statement(
+        text("SELECT * FROM idea WHERE idea_id = :id")
+        .bindparams(id=idea_id.hex))
     idea = Idea.query.filter_by(idea_id=idea_id).first()
-    idea = Idea.query.from_statement(
-        text("SELECT * FROM idea WHERE idea_id = :id").
-        bindparams(id=idea_id.hex)).first()
 
     if not idea:
         raise NotFound
@@ -105,24 +105,23 @@ def delete_idea(idea_id):
     Delete the idea with matching idea_id.
     """
     if current_user.is_admin():
-        # idea = Idea.query.filter_by(idea_id=idea_id).first()
-        idea = Idea.query.from_statement(
+        Idea.query.from_statement(
             text("SELECT * FROM idea where idea_id=:idea_id")).\
             params(idea_id=idea_id.hex).all()
+        idea = Idea.query.filter_by(idea_id=idea_id).first()
     else:
-        # idea = Idea.query.filter_by(
-        #     idea_id=idea_id, user_id=current_user.user_id).first()
-        idea = Idea.query.from_statement(text(
+        Idea.query.from_statement(text(
             "SELECT * FROM idea where idea_id=:idea_id AND user_id=:user_id")). \
             params(
                 idea_id=idea_id.hex, user_id=current_user.user_id).all()
+        idea = Idea.query.filter_by(
+            idea_id=idea_id, user_id=current_user.user_id).first()
 
     if not idea:
         raise NotFound
 
-    # idea = db.engine.execute("DELETE FROM idea WHERE idea_id==:id",
-    # id=idea_id)
     Idea.delete(idea)
+    # db.engine.execute("DELETE FROM idea WHERE idea_id = :id", id=idea_id.hex)
     return make_response('', 204)
 
 
@@ -135,10 +134,10 @@ def edit_idea(idea_id):
     if not request.json:
         raise InvalidRequest
 
-    idea = Idea.query.from_statement(
+    Idea.query.from_statement(
         text("SELECT * FROM idea where idea_id=:idea_id")).\
         params(idea_id=idea_id.hex).all()
-    # idea = Idea.query.filter_by(idea_id=idea_id).first()
+    idea = Idea.query.filter_by(idea_id=idea_id).first()
     if not idea:
         raise NotFound
 
@@ -168,10 +167,10 @@ def vote_idea(idea_id):
     Increase the vote count of the idea with matching idea_id.
     """
 
-    idea = Idea.query.from_statement(
+    Idea.query.from_statement(
         text("SELECT * FROM idea where idea_id=:idea_id")).\
-        params(idea_id=str(idea_id)).all()
-    # idea = Idea.query.filter_by(idea_id=idea_id).first()
+        params(idea_id=idea_id.hex)
+    idea = Idea.query.filter_by(idea_id=idea_id).first()
 
     if not idea:
         raise NotFound
@@ -181,10 +180,10 @@ def vote_idea(idea_id):
     if idea.user_id == user_id:
         raise Conflict('You can not vote on your own ideas.')
 
-    voted = Vote.query.from_statement(
+    Vote.query.from_statement(
         text("SELECT * FROM vote where idea_id=:idea_id AND user_id==:user_id")).\
-        params(idea_id=str(idea_id), user_id=str(user_id)).all()
-    # voted = Vote.query.filter_by(user_id=user_id, idea_id=idea_id).first()
+        params(idea_id=idea_id.hex, user_id=user_id.hex)
+    voted = Vote.query.filter_by(user_id=user_id, idea_id=idea_id).first()
 
     if not voted:
         Vote.new(user_id, idea_id)
@@ -203,10 +202,11 @@ def toggle_subscription(idea_id):
     """
 
     user_id = current_user.user_id
-    sub = IdeaSub.query.from_statement(text(
+    IdeaSub.query.from_statement(text(
         "SELECT * from idea_sub where sub_by=:by AND sub_to=:to").params(
-        by=user_id.hex, to=idea_id.hex)).all()
-    # sub = IdeaSub.query.filter_by(sub_by=user_id, sub_to=idea_id).first()
+        by=user_id.hex, to=idea_id.hex))
+    sub = IdeaSub.query.filter_by(sub_by=user_id, sub_to=idea_id).first()
+
     if not sub:
         IdeaSub.new(user_id, idea_id)
         msg = "You are now subscribed."
