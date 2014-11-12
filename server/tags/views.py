@@ -16,7 +16,6 @@ from flask_login import (
 )
 from sqlalchemy.sql import text
 
-from misc.uuid import hex_uuid
 from misc.parser import Parser
 
 from .models import Tag
@@ -121,7 +120,7 @@ def toggle_subscription(tag_id):
     # sub = TagSub.query.filter_by(sub_by=user_id, sub_to=tag_id).first()
     sub = TagSub.query.from_statement(text(
         "SELECT * FROM tag_sub where sub_by=:by AND sub_to=:to").params(
-        by=hex_uuid(user_id), to=tag_id)).all()
+        by=user_id.hex, to=tag_id)).all()
     if not sub:
         TagSub.new(user_id, tag_id)
         msg = "You are now subscribed."

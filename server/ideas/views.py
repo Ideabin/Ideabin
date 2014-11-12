@@ -120,7 +120,8 @@ def delete_idea(idea_id):
     if not idea:
         raise NotFound
 
-    # idea = db.engine.execute("DELETE FROM idea WHERE idea_id==:id", id=idea_id)
+    # idea = db.engine.execute("DELETE FROM idea WHERE idea_id==:id",
+    # id=idea_id)
     Idea.delete(idea)
     return make_response('', 204)
 

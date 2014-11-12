@@ -18,7 +18,6 @@ from sqlalchemy import or_
 
 from misc import db
 from misc.parser import Parser
-from misc.uuid import hex_uuid
 
 from server.exceptions import *
 
@@ -66,7 +65,7 @@ def get_user(uid):
     """
     u = User.query.from_statement(
         text("SELECT * FROM user where user_id=:uid")).\
-        params(uid=hex_uuid(uid)).all()
+        params(uid=uid.hex).all()
     # u = User.query.filter_by(user_id=uid).first()
     if not u:
         raise NotFound
@@ -138,10 +137,11 @@ def toggle_subscription(user_id):
     if this_user_id == user_id:
         raise Conflict("You can't subscribe yourself.")
 
-    # sub = UserSub.query.filter_by(sub_by=this_user_id, sub_to=user_id).first()
+    # sub = UserSub.query.filter_by(sub_by=this_user_id,
+    # sub_to=user_id).first()
     sub = UserSub.query.from_statement(text(
         "SELECT * FROM user_sub where sub_by=:by AND sub_to=:to").params(
-        by=hex_uuid(this_user_id), to=hex_uuid(user_id))).all()
+        by=this_user_id.hex, to=user_id.hex)).all()
     if not sub:
         UserSub.new(this_user_id, user_id)
         msg = "You are now subscribed."
