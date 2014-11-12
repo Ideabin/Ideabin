@@ -21,7 +21,12 @@ from server.comments.models import Comment
 from server.tags.models import Tag
 from server.tagging.models import Tagging
 
-from server.notifications.models import NotifIdeaByUser
+from server.notifications.models import (
+    NotifIdeaByUser,
+    NotifIdeaUpdate,
+    NotifCommentByUser,
+    NotifCommentOnIdea
+)
 
 frontend_bp = Blueprint('frontend', __name__)
 
@@ -58,9 +63,23 @@ def explore():
 @frontend_bp.route('/notifications/', endpoint='notifications')
 @login_required
 def explore():
+
     notifs = NotifIdeaByUser.query \
         .filter_by(user_to=current_user.user_id, read=False) \
         .order_by(NotifIdeaByUser.created_on.desc()).limit(50).all()
+
+    notifs += NotifIdeaUpdate.query \
+        .filter_by(user_to=current_user.user_id, read=False) \
+        .order_by(NotifIdeaUpdate.created_on.desc()).limit(50).all()
+
+    notifs += NotifCommentByUser.query \
+        .filter_by(user_to=current_user.user_id, read=False) \
+        .order_by(NotifCommentByUser.created_on.desc()).limit(50).all()
+
+    notifs += NotifCommentOnIdea.query \
+        .filter_by(user_to=current_user.user_id, read=False) \
+        .order_by(NotifCommentOnIdea.created_on.desc()).limit(50).all()
+
     return render_template('notifications.html', notifs=notifs)
 
 
