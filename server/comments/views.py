@@ -83,16 +83,22 @@ def create_comment(idea_id):
     new = Comment.new(current_user.user_id, idea_id, desc)
 
     idea = Idea.get(idea_id=idea_id)
+    text("INSERT INTO comment values(:uid, :iid, :desc)") \
+    .params(uid=current_user.user_id, iid=idea_id, desc=desc)
 
     # Create notifications for subscribers of idea
     for user_id in idea.subscribers:
         NotifCommentOnIdea.new(
             current_user.user_id, uuid.UUID(user_id), idea_id, new.comment_id)
+        text("INSERT INTO notif_comment_on_idea values(:cuid, :uid, :iid, :cid)") \
+        .params(cuid=current_user.user_id, uid=user_id, iid=idea_id, cid=new.comment_id)
 
     # Create notifications for subscribers of user
     for user_id in current_user.subscribers:
         NotifCommentByUser.new(
             current_user.user_id, uuid.UUID(user_id), idea_id, new.comment_id)
+        text("INSERT INTO notif_comment_by_user values(:cuid, :uid, :iid, :cid)") \
+        .params(cuid=current_user.user_id, uid=user_id, iid=idea_id, cid=new.comment_id)
 
     return make_response(jsonify(new.json), 201)
 
@@ -106,14 +112,14 @@ def delete_comment(idea_id, comment_id):
     """
 
     user_id = current_user.user_id
-    comment = Comment.query.from_statement(
+    Comment.query.from_statement(
         text("SELECT * from comment WHERE comment_id=:comment_id "
              "AND idea_id=:idea_id AND user_id=user_id").params(
             comment_id=comment_id.hex,
             idea_id=idea_id.hex,
             user_id=user_id.hex)).all()
-    # comment = Comment.query.filter_by(
-    #     comment_id=comment_id, user_id=user_id, idea_id=idea_id).first()
+    comment = Comment.query.filter_by(
+        comment_id=comment_id, user_id=user_id, idea_id=idea_id).first()
     if not comment:
         raise NotFound
     else:
