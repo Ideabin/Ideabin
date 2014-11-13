@@ -14,10 +14,12 @@
           // Todo: (9) Display errors with Bootstrap Popovers (and success?)
           success: function(data, tStatus)
           {
-            location.reload(false);
+            alert("Profile Updated");
+            window.location = "/u/{{ user.username }}";
           },
           error:function(jqXHR, tStatus, errorThrown)
           {
+            alert("Insert all values correctly.");
             data = JSON.parse(jqXHR.responseText);
             console.log(data);
           }
