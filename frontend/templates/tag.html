@@ -8,6 +8,9 @@
       <p>{{ tag.desc | safe}}</p>
       {% if current_user.is_authenticated() %}
       <button id="subscribe" class="btn btn-success">{% if current_user.user_id | string in tag.subscribers %}Unsubscribe{% else %}Subscribe{% endif %}</button>
+      {% if current_user.is_admin() %}
+      <button id="delete" class="btn btn-danger pull-right"> <i class="fa fa-times fa"></i>    Delete</button>
+      {% endif %}
       {% endif %}
     </div>
   </div>
@@ -43,6 +46,24 @@
             $('#subscribe').text(function(i, text) {
               return text === "Subscribe" ? "Unsubscribe" : "Subscribe";
             });
+          },
+          error:function(jqXHR, tStatus, errorThrown)
+          {
+            data = JSON.parse(jqXHR.responseText);
+            console.log(data);
+          }
+        });
+      return e.preventDefault();
+      });
+
+      $('#delete').click(function(e)
+      {
+        $.ajax({
+          type: "DELETE",
+          url: "/api/1/tags/{{ tag.tagname }}",
+          success: function(data, tStatus)
+          {
+            window.location = "{{ url_for('frontend.explore') }}";
           },
           error:function(jqXHR, tStatus, errorThrown)
           {

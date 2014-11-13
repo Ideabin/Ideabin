@@ -79,13 +79,15 @@ def create_tag():
     return make_response(jsonify(new.json), 201)
 
 
-# Todo: Only moderators are allowed to delete a tag.
 @tags_bp.route('/<string:tname>', endpoint='delete', methods=['DELETE'])
-# @login_required()
+@login_required
 def delete_tag(tname):
     """
     Delete the tag with matching tag_id.
     """
+
+    if not current_user.is_admin():
+        raise Unauthorized
 
     tag = Tag.query.filter_by(tagname=tname).first()
     if not tag:
