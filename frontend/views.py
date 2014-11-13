@@ -67,18 +67,26 @@ def explore():
 @login_required
 def explore():
 
+    text("SELECT * FROM notif_idea_by_user WHERE user_to=:uid AND read=:r LIMIT 50") \
+        .params(uid=current_user.user_id, read=False)
     notifs = NotifIdeaByUser.query \
         .filter_by(user_to=current_user.user_id, read=False) \
         .order_by(NotifIdeaByUser.created_on.desc()).limit(50).all()
 
+    text("SELECT * FROM notif_idea_update WHERE user_to=:uid AND read=:r LIMIT 50") \
+        .params(uid=current_user.user_id, read=False)
     notifs += NotifIdeaUpdate.query \
         .filter_by(user_to=current_user.user_id, read=False) \
         .order_by(NotifIdeaUpdate.created_on.desc()).limit(50).all()
 
+    text("SELECT * FROM notif_comment_by_user WHERE user_to=:uid AND read=:r LIMIT 50") \
+        .params(uid=current_user.user_id, read=False)
     notifs += NotifCommentByUser.query \
         .filter_by(user_to=current_user.user_id, read=False) \
         .order_by(NotifCommentByUser.created_on.desc()).limit(50).all()
 
+    text("SELECT * FROM notif_comment_on_idea WHERE user_to=:uid AND read=:r LIMIT 50") \
+        .params(uid=current_user.user_id, read=False)
     notifs += NotifCommentOnIdea.query \
         .filter_by(user_to=current_user.user_id, read=False) \
         .order_by(NotifCommentOnIdea.created_on.desc()).limit(50).all()

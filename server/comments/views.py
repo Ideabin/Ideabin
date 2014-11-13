@@ -39,9 +39,9 @@ def get_comments(idea_id):
     """
 
     # Todo: Add paging to retrieve next 50 comments and so on
-    comments = Comment.query.from_statement(
+    Comment.query.from_statement(
         text("SELECT * FROM comment LIMIT 50")).all()
-    # comments = Comment.query.filter_by(idea_id=idea_id).limit(50)
+    comments = Comment.query.filter_by(idea_id=idea_id).limit(50)
 
     resp = make_response(json.dumps([c.json for c in comments]), 200)
     resp.mimetype = 'application/json'
@@ -55,12 +55,12 @@ def get_comment(idea_id, comment_id):
     Get a specific comment with matching comment_id
     """
 
-    comment = Comment.query.from_statement(text(
+    Comment.query.from_statement(text(
         "SELECT * from comment WHERE comment_id=:comment_id AND "
         "idea_id=:idea_id"). params(comment_id=comment_id,
                                     idea_id=idea_id)).all()
-    # comment = Comment.query.filter_by(
-    #     comment_id=comment_id, idea_id=idea_id).first()
+    comment = Comment.query.filter_by(
+        comment_id=comment_id, idea_id=idea_id).first()
     if not comment:
         raise NotFound
 
@@ -118,11 +118,12 @@ def delete_comment(idea_id, comment_id):
             comment_id=comment_id.hex,
             idea_id=idea_id.hex,
             user_id=user_id.hex)).all()
-    comment = Comment.query.filter_by(
         comment_id=comment_id, user_id=user_id, idea_id=idea_id).first()
     if not comment:
         raise NotFound
     else:
+        text("DELETE FROM comment where comment_id = :cid") \
+        .params(cid=comment_id)
         Comment.delete(comment)
 
     return make_response('', 204)

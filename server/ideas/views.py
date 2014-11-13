@@ -1,5 +1,6 @@
 import uuid
 import json
+import datetime as dt
 
 from flask import (
     make_response,
@@ -86,19 +87,21 @@ def create_idea():
 
     if current_user.is_anonymous():
         new = Idea.new(title, desc, User.get_anon().user_id, tags)
-        text("INSERT INTO idea values(:t, :desc, :uid, :tags)") \
-        .params(t=title, desc=desc, uid=User.get_anon().user_id, tags=tags)
+        text("INSERT INTO idea values(:id, :t, :con, :desc, :uid, :tags)") \
+            .params(id=uuid.UUID(), t=title, con=dt.datetime.utcnow(),
+                    desc=desc, uid=User.get_anon().user_id, tags=tags)
     else:
         new = Idea.new(title, desc, current_user.user_id, tags)
-        text("INSERT INTO idea values(:t, :desc, :uid, :tags)") \
-        .params(t=title, desc=desc, uid=current_user.user_id, tags=tags)
+        text("INSERT INTO idea values(:id, :t, :con, :desc, :uid, :tags)") \
+            .params(id=uuid.UUID(), t=title, con=dt.datetime.utcnow(),
+                    desc=desc, uid=current_user.user_id, tags=tags)
 
         # user.subscribers contains strings
         for user_id in current_user.subscribers:
             NotifIdeaByUser.new(
                 current_user.user_id, uuid.UUID(user_id), new.idea_id)
             text("INSERT INTO notif_idea_by_user values(:cuid, :uid, :iid)") \
-            .params(cuid=current_user.user_id, uid=uuid.UUID(user_id), iid=new.idea_id)
+                .params(cuid=current_user.user_id, uid=uuid.UUID(user_id), iid=new.idea_id)
 
     return make_response(jsonify(new.json), 201)
 
@@ -157,14 +160,14 @@ def edit_idea(idea_id):
 
     idea = Idea.update(idea, title, desc, status, tags)
     text("UPDATE idea SET title=:t, desc=:d, status=:s, tags=:tag where idea_id=:iid") \
-    .params(t=title, d=desc, tag=tags, iid=idea_id)
+        .params(t=title, d=desc, tag=tags, iid=idea_id)
 
     # idea.subscribers contains strings
     for user_id in idea.subscribers:
         NotifIdeaUpdate.new(
             current_user.user_id, uuid.UUID(user_id), idea.idea_id)
         text("INSERT INTO notif_idea_update values(:cuid, :uid, :iid)") \
-        .params(cuid=current_user.user_id, uid=uuid.UUID(user_id), iid=new.idea_id)
+            .params(cuid=current_user.user_id, uid=uuid.UUID(user_id), iid=new.idea_id)
 
     return make_response(jsonify(idea.json), 201)
 
@@ -197,11 +200,11 @@ def vote_idea(idea_id):
     if not voted:
         Vote.new(user_id, idea_id)
         text("INSERT INTO vote values(:uid, :iid)") \
-        .params(uid=user_id, iid=idea_id)
+            .params(uid=user_id, iid=idea_id)
     else:
         Vote.delete(voted)
         text("DELETE FROM vote WHERE idea_id = :id AND user_id==:uid") \
-        .params(id=idea_id.hex, uid=user_id)
+            .params(id=idea_id.hex, uid=user_id)
     return make_response(jsonify({"vote_count": idea.vote_count}), 200)
 
 
@@ -222,12 +225,12 @@ def toggle_subscription(idea_id):
     if not sub:
         IdeaSub.new(user_id, idea_id)
         text("INSERT INTO idea_sub values(:uid, :iid)") \
-        .params(uid=user_id, iid=idea_id)
+            .params(uid=user_id, iid=idea_id)
         msg = "You are now subscribed."
     else:
         IdeaSub.delete(sub)
         text("DELETE FROM idea_sub WHERE idea_id = :id AND user_id==:uid") \
-        .params(id=idea_id.hex, uid=user_id)
+            .params(id=idea_id.hex, uid=user_id)
         msg = "You are now unsubscribed."
 
     return make_response(jsonify({"message": msg}), 200)

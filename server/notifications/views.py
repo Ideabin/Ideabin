@@ -35,18 +35,26 @@ def get_notifs():
     Returns notifications for the user
     """
 
+    text("SELECT * FROM notif_idea_by_user WHERE user_to=:uid AND read=:r LIMIT 50") \
+        .params(uid=current_user.user_id, read=False)
     notifs = NotifIdeaByUser.query \
         .filter_by(user_to=current_user.user_id, read=False) \
         .limit(50).all()
 
+    text("SELECT * FROM notif_idea_update WHERE user_to=:uid AND read=:r LIMIT 50") \
+        .params(uid=current_user.user_id, read=False)
     notifs += NotifIdeaUpdate.query \
         .filter_by(user_to=current_user.user_id, read=False) \
         .limit(50).all()
 
+    text("SELECT * FROM notif_comment_by_user WHERE user_to=:uid AND read=:r LIMIT 50") \
+        .params(uid=current_user.user_id, read=False)
     notifs += NotifCommentByUser.query \
         .filter_by(user_to=current_user.user_id, read=False) \
         .limit(50).all()
 
+    text("SELECT * FROM notif_comment_on_idea WHERE user_to=:uid AND read=:r LIMIT 50") \
+        .params(uid=current_user.user_id, read=False)
     notifs += NotifCommentOnIdea.query \
         .filter_by(user_to=current_user.user_id, read=False) \
         .limit(50).all()

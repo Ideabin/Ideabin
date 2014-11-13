@@ -1,4 +1,6 @@
+import uuid
 import json
+import datetime as dt
 
 from misc import db
 from server.exceptions import *
@@ -46,10 +48,9 @@ def get_tag(tag_id):
     Get a specific tag with the matching tag_id
     """
 
-    # tag = Tag.query.filter_by(tag_id=tag_id).first()
-    tag = Tag.query.from_statement(
-        text("SELECT * FROM tag WHERE tag_id = :tag_id")).\
-        params(tag_id=tag_id).all()
+    text("SELECT * FROM tag WHERE tag_id = :tag_id") \
+    .params(tag_id=tag_id)
+    tag = Tag.query.filter_by(tag_id=tag_id).first()
     if not tag:
         raise NotFound
 
@@ -61,10 +62,10 @@ def get_tag(tname):
     """
     Get a specific tag with the matching tagname
     """
-    # tag = Tag.query.filter_by(tagname=tname).first()
-    tag = Tag.query.from_statement(
-        text("SELECT * FROM tag where tagname = :tname")).\
-        params(tname=tname).all()
+
+    text("SELECT * FROM tag where tagname = :tname") \
+    .params(tname=tname)
+    tag = Tag.query.filter_by(tagname=tname).first()
     if not tag:
         raise NotFound
 
@@ -82,6 +83,8 @@ def create_tag():
     name = Parser.string('name', min=2, max=50)
     desc = Parser.string('desc', optional=True)
 
+    text("INSERT INTO tag VALUES (:tid, :tname, :des, :con)") \
+    .params(tid=uuid.UUID(), tname=name, des=desc, con=dt.datetime.utcnow())
     new = Tag.new(name, desc)
     return make_response(jsonify(new.json), 201)
 
@@ -122,9 +125,13 @@ def toggle_subscription(tag_id):
         "SELECT * FROM tag_sub where sub_by=:by AND sub_to=:to").params(
         by=user_id.hex, to=tag_id)).all()
     if not sub:
+        text("INSERT INTO tag_sub values(:uid, :tid)") \
+            .params(uid=user_id, iid=tag_id)
         TagSub.new(user_id, tag_id)
         msg = "You are now subscribed."
     else:
+        text("DELETE from tag_sub WHERE user_id = :uid, tag_id = :tid") \
+            .params(uid=user_id, iid=tag_id)
         TagSub.delete(sub)
         msg = "You are now unsubscribed."
 
