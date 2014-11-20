@@ -54,6 +54,11 @@
       <div class="row comment">
         <p class="text-muted"><a href="/u/{{ comment.user.username }}">{{ comment.user.username }}</a> on {{ comment.created_on.strftime('%a, %d %b') }} </p>
         <div class="content">{{ comment.desc_html | safe }}</div>
+        {% if current_user.is_authenticated() %}
+        {% if current_user.username == comment.user.username or current_user.is_admin() %}
+        <a onclick="commentDelete(this);" style="cursor: pointer;" commentid="{{ comment.comment_id }}">Delete</a>
+        {% endif %}
+        {% endif %}
         <hr>
       </div>
     {% endfor %}
@@ -139,10 +144,28 @@
                   console.log(data);
                 }
               });
-
               return e.preventDefault();
             });
           });
+
+          function commentDelete(element) {
+            // console.log($(element));
+            commentid = $(element).attr('commentid');
+            $.ajax({
+              type: "DELETE",
+              url: "/api/1/ideas/{{ idea.idea_id }}/comments/" + commentid,
+              success: function(data, tStatus)
+              {
+                location.reload(true);
+              },
+              error:function(jqXHR, tStatus, errorThrown)
+              {
+                data = JSON.parse(jqXHR.responseText);
+                console.log(data);
+              }
+            });
+            return e.preventDefault();
+          }
         </script>
       {% endblock %}
     <form id="commentForm" role="form" method="post">

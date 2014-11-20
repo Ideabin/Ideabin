@@ -97,9 +97,12 @@ def delete_comment(idea_id, comment_id):
     Delete the comment with matching comment_id
     """
 
-    user_id = current_user.user_id
-    comment = Comment.query.filter_by(
-        comment_id=comment_id, user_id=user_id, idea_id=idea_id).first()
+    if current_user.is_admin():
+        comment = Comment.get(comment_id=comment_id)
+    else:
+        comment = Comment.get(comment_id=comment_id,
+                              user_id=current_user.user_id)
+
     if not comment:
         raise NotFound
     else:
